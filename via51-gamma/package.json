@@ -1,0 +1,25 @@
+﻿{
+    "version":  "1.0.0",
+    "name":  "v51-gamma-console",
+    "scripts":  {
+                    "preview":  "vite preview",
+                    "build":  "vite build",
+                    "dev":  "vite"
+                },
+    "devDependencies":  {
+                            "postcss":  "^8.4.31",
+                            "autoprefixer":  "^10.4.16",
+                            "vite":  "^4.4.5",
+                            "typescript":  "^5.0.2",
+                            "@types/react-dom":  "^18.2.0",
+                            "tailwindcss":  "^3.3.3",
+                            "@types/react":  "^18.2.0"
+                        },
+    "type":  "module",
+    "dependencies":  {
+                         "react":  "^18.2.0",
+                         "lucide_react":  "^0.284.0",
+                         "react-dom":  "^18.2.0"
+                     },
+    "private":  true
+}
