@@ -1,94 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vía51 - Consola GAMMA</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vía51 - Gamma Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: white; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .glow-purple { box-shadow: 0 0 40px -10px #a855f7; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="max-w-5xl w-full glass glow-purple p-8 md:p-12 rounded-[2.5rem] relative overflow-hidden">
-        
-        <header class="flex justify-between items-start mb-12">
-            <div>
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="h-3 w-3 bg-purple-500 rounded-full animate-ping"></div>
-                    <span class="text-purple-400 font-bold tracking-[0.3em] text-xs uppercase">Gamma Intel / Live</span>
-                </div>
-                <h1 class="text-4xl md:text-6xl font-black tracking-tighter uppercase">Consola de Mando</h1>
-            </div>
-            <div class="text-right">
-                <span class="bg-purple-600/20 text-purple-400 border border-purple-500/30 px-4 py-1 rounded-full text-xs font-bold">SOBERANÍA 9A</span>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <!-- Card 1: SITREP -->
-            <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-2">Estado del Fractal</p>
-                <p id="asset-count" class="text-3xl font-black text-white">Cargando...</p>
-                <p class="text-[10px] text-green-500 mt-1 uppercase">● Sincronizado</p>
-            </div>
-            <!-- Card 2: Producción -->
-            <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-2">Proyecto Actual</p>
-                <p class="text-xl font-bold text-white">LE POMMIER</p>
-                <p class="text-[10px] text-purple-400 mt-1 uppercase">Fragmentación OK</p>
-            </div>
-            <!-- Card 3: Red -->
-            <div class="bg-white/5 p-6 rounded-3xl border border-white/5">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-2">Frecuencia de Red</p>
-                <p class="text-3xl font-black text-white">60Hz</p>
-                <p class="text-[10px] text-blue-400 mt-1 uppercase">Digital Estable</p>
-            </div>
-        </div>
-
-        <!-- Lista de Activos Recientes -->
-        <div class="bg-black/40 p-6 rounded-3xl border border-white/5">
-            <h3 class="text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">Últimos Átomos Detectados</h3>
-            <div id="asset-list" class="space-y-3 text-xs font-mono">
-                <!-- Los datos de Supabase aparecerán aquí -->
-            </div>
-        </div>
-
-        <footer class="mt-10 pt-6 border-t border-white/10 flex justify-between items-center">
-            <p class="text-[10px] text-slate-600 italic">"El orden digital precede a la prosperidad nacional."</p>
-            <p class="text-[10px] text-slate-500 uppercase">V51_DNA: GAMMA_CORE_V1</p>
-        </footer>
-    </div>
-
-    <script>
-        const SB_URL = "https://ibhhzgtxaqwdykedhtvk.supabase.co";
-        const SB_KEY = "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK";
-
-        async function fetchSITREP() {
-            try {
-                const res = await fetch(\/rest/v1/assets?select=*, {
-                    headers: { 'apikey': SB_KEY, 'Authorization': Bearer \ }
-                });
-                const data = await res.json();
-                
-                document.getElementById('asset-count').innerText = \ Átomos;
-                
-                const list = document.getElementById('asset-list');
-                list.innerHTML = data.slice(0, 5).map(a => 
-                    <div class="flex justify-between border-b border-white/5 pb-2">
-                        <span class="text-slate-300">\</span>
-                        <span class="text-purple-500">\ KB</span>
-                    </div>
-                ).join('');
-            } catch (e) {
-                document.getElementById('asset-count').innerText = "Error de Red";
-            }
-        }
-        fetchSITREP();
-        setInterval(fetchSITREP, 30000); // Actualizar cada 30 seg
-    </script>
-</body>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
