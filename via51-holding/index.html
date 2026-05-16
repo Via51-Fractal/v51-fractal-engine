@@ -4,50 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vía51 - HOLDING</title>
-    <!-- Carga de Estilos Reforzada para Tablets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
+        body { font-family: 'Inter', sans-serif; background-color: #020617; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .glow { box-shadow: 0 0 50px -12px #06b6d4; }
     </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-4xl w-full glass border border-white/10 p-8 md:p-16 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+<body class="text-white min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full glass glow p-8 md:p-16 rounded-[3rem] relative overflow-hidden">
         
-        <!-- Identificador de Fondo -->
-        <div class="absolute -top-10 -right-10 opacity-[0.03] font-black text-[15rem] pointer-events-none">
+        <!-- Identificador Fractal de Fondo -->
+        <div class="absolute -top-10 -right-10 opacity-[0.05] font-black text-[15rem] pointer-events-none select-none">
             HOLDING
         </div>
         
         <div class="relative z-10">
             <header class="flex items-center gap-4 mb-12">
-                <div class="h-1 w-20 rounded-full" style="background-color: {{COLOR}}"></div>
-                <span class="text-slate-500 font-bold tracking-[0.4em] text-[10px] md:text-xs uppercase">V51-FRACTAL-ENGINE / STABLE</span>
+                <div class="h-1 w-16 rounded-full" style="background-color: #06b6d4"></div>
+                <span class="text-slate-500 font-bold tracking-[0.4em] text-[10px] uppercase">V51-FRACTAL-ENGINE / STABLE</span>
             </header>
 
             <main>
                 <h2 class="text-slate-400 font-light text-xl md:text-2xl mb-2 uppercase tracking-tighter">Nodo de Soberanía</h2>
-                <h1 class="text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-none" style="color: {{COLOR}}">
-                    {{ROLE}}
+                <h1 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter uppercase leading-none" style="color: #06b6d4">
+                    COORDINACIÓN
                 </h1>
                 
-                <div class="bg-white/5 p-6 md:p-10 rounded-3xl border border-white/10 mb-12">
+                <div class="bg-white/5 p-6 md:p-10 rounded-3xl border border-white/5 mb-12">
                     <p class="text-2xl md:text-4xl font-medium italic text-slate-100 leading-tight">
-                        "{{MANTRA}}"
+                        "Un solo mando asegura la estabilidad de la red."
                     </p>
                 </div>
             </main>
 
             <footer class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/10 pt-10">
-                <div class="flex flex-col gap-1">
+                <div>
                     <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estatus de Red</p>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 mt-1">
                         <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <p class="text-xs font-mono text-green-400 uppercase">Sincronizado al 100%</p>
+                        <p class="text-xs font-mono text-green-400 uppercase">Sincronizado / 60Hz Digital</p>
                     </div>
                 </div>
-                <div class="md:text-right flex flex-col gap-1">
+                <div class="md:text-right">
                     <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Gobernador Digital</p>
                     <p class="text-sm font-bold text-slate-300">Nivel 9A - Fredy Bazalar</p>
                 </div>
