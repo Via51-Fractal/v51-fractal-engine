@@ -4,36 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vía51 - ROOT</title>
+    <!-- Carga de Estilos Reforzada para Tablets -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); }
+    </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-6 font-sans">
-    <div class="max-w-3xl w-full bg-slate-900 border border-slate-800 p-12 rounded-[2rem] shadow-2xl relative overflow-hidden">
-        <!-- Marca de Agua Fractal -->
-        <div class="absolute -top-10 -right-10 opacity-5 font-black text-[12rem]">ROOT</div>
+<body class="bg-slate-950 text-white min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full glass border border-white/10 p-8 md:p-16 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+        
+        <!-- Identificador de Fondo -->
+        <div class="absolute -top-10 -right-10 opacity-[0.03] font-black text-[15rem] pointer-events-none">
+            ROOT
+        </div>
         
         <div class="relative z-10">
-            <div class="flex items-center gap-4 mb-8">
-                <div class="h-4 w-12 rounded-full" style="background-color: #3b82f6"></div>
-                <span class="text-slate-500 font-bold tracking-[0.3em] text-xs uppercase">V51-REBIRTH / FUSIÓN NUCLEAR</span>
-            </div>
+            <header class="flex items-center gap-4 mb-12">
+                <div class="h-1 w-20 rounded-full" style="background-color: {{COLOR}}"></div>
+                <span class="text-slate-500 font-bold tracking-[0.4em] text-[10px] md:text-xs uppercase">V51-FRACTAL-ENGINE / STABLE</span>
+            </header>
 
-            <h2 class="text-slate-400 font-light text-xl mb-1 uppercase tracking-tighter">Nodo de Soberanía</h2>
-            <h1 class="text-6xl font-black mb-6 tracking-tighter uppercase" style="color: #3b82f6">COMANDO MAESTRO</h1>
-            
-            <div class="bg-black/50 backdrop-blur p-6 rounded-2xl border border-white/5 mb-10">
-                <p class="text-2xl font-medium italic text-slate-200 leading-tight">"El dato es el átomo de la soberanía."</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
-                <div>
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estatus del Sistema</p>
-                    <p class="text-sm font-mono text-green-400">● UNIFICADO & SINCRONIZADO</p>
+            <main>
+                <h2 class="text-slate-400 font-light text-xl md:text-2xl mb-2 uppercase tracking-tighter">Nodo de Soberanía</h2>
+                <h1 class="text-5xl md:text-8xl font-black mb-8 tracking-tighter uppercase leading-none" style="color: {{COLOR}}">
+                    {{ROLE}}
+                </h1>
+                
+                <div class="bg-white/5 p-6 md:p-10 rounded-3xl border border-white/10 mb-12">
+                    <p class="text-2xl md:text-4xl font-medium italic text-slate-100 leading-tight">
+                        "{{MANTRA}}"
+                    </p>
                 </div>
-                <div class="text-right">
+            </main>
+
+            <footer class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/10 pt-10">
+                <div class="flex flex-col gap-1">
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estatus de Red</p>
+                    <div class="flex items-center gap-2">
+                        <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <p class="text-xs font-mono text-green-400 uppercase">Sincronizado al 100%</p>
+                    </div>
+                </div>
+                <div class="md:text-right flex flex-col gap-1">
                     <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Gobernador Digital</p>
                     <p class="text-sm font-bold text-slate-300">Nivel 9A - Fredy Bazalar</p>
                 </div>
-            </div>
+            </footer>
         </div>
     </div>
 </body>
