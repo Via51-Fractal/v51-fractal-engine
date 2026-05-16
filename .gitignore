@@ -1,0 +1,22 @@
+﻿# V51_DNA: ANTI-NOISE_FILTER_V2
+node_modules/
+.next/
+dist/
+build/
+.vscode/
+*.log
+.env*
+99_LEGACY_ARCHIVE/
+
+# BLOQUEO DE CARGA PESADA (Viven en Supabase Storage)
+*.v51
+*.rar
+*.zip
+*.7z
+*.mp3
+*.mp4
+*.pdf
+*.xlsx
+*.xlsm
+*.docx
+*.exe

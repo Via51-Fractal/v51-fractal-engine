@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+build/
+.vercel/
+.env*
+*.pem
+package-lock.json
+.vercel
+.env*.local
