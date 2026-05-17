@@ -3,13 +3,13 @@ import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma optimizado. El prompt ahora soporta múltiples líneas. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma optimizado. Las burbujas ahora son elásticas y el núcleo Gemini ha sido calibrado. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -17,7 +17,6 @@ const App = () => {
 
   const handleExecute = async () => {
     if (!input.trim() || loading) return;
-    
     const userMessage = { role: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
@@ -25,24 +24,23 @@ const App = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      // Cambio a la ruta estable v1 para evitar el error 404 detectado
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
       });
       
       const data = await response.json();
-      
-      if (data.error) {
-        setMessages(prev => [...prev, { role: 'ai', text: `ERROR DEL NÚCLEO: ${data.error.message} (Código: ${data.error.code})` }]);
-      } else if (data.candidates && data.candidates[0]) {
+      if (data.candidates && data.candidates[0]) {
         const aiText = data.candidates[0].content.parts[0].text;
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: 'SISTEMA: El núcleo Gemini no devolvió datos. Verifique la configuración de la llave.' }]);
+        const errorMsg = data.error ? data.error.message : 'Respuesta denegada por el núcleo.';
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${errorMsg}` }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'FALLO DE RED: Interferencia total en la línea de datos.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
     } finally {
       setLoading(false);
     }
@@ -83,14 +81,16 @@ const App = () => {
               <Terminal size={12} className="text-purple-400" />
               <h2 className="font-bold text-purple-400 uppercase text-[9px] tracking-widest">Consola Agéntica</h2>
             </div>
-            {loading && <span className="text-[10px] text-purple-400 animate-pulse uppercase font-black">Procesando...</span>}
           </div>
           
-          <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5">
+          {/* ZONA DE CHAT: Scroll solo aquí, burbujas elásticas */}
+          <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5 custom-scrollbar">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[90%] p-4 rounded-2xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
-                  <p className="text-xs leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                <div className={`max-w-[85%] p-4 rounded-3xl h-auto ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                    {m.text}
+                  </p>
                 </div>
               </div>
             ))}
@@ -109,15 +109,11 @@ const App = () => {
                   }
                 }}
                 placeholder="Escriba su orden (Shift+Enter para nueva línea)..."
-                className="w-full bg-transparent border-none text-xs focus:outline-none resize-none overflow-y-auto custom-scrollbar"
+                className="w-full bg-transparent border-none text-xs focus:outline-none resize-none overflow-y-auto"
                 disabled={loading}
               />
               <div className="flex justify-end">
-                <button 
-                  onClick={handleExecute} 
-                  disabled={loading || !input.trim()} 
-                  className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full transition-all"
-                >
+                <button onClick={handleExecute} disabled={loading || !input.trim()} className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full transition-all">
                   <Send size={14} />
                 </button>
               </div>
