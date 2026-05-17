@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check, Clock, XCircle, Key } from 'lucide-react';
+import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check, Clock, Key } from 'lucide-react';
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma sincronizado con Núcleo 2.5 Flash. La red trifásica está en fase. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, núcleo Gemini 2.5 Flash consolidado. Herramientas de captura total (Q+A) activas. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -49,20 +49,17 @@ const App = () => {
     setTimer(0);
 
     try {
-      // RECTIFICACIÓN MAESTRA: Uso de gemini-2.5-flash (Validado por sonda forense)
+      // MANTENIENDO NÚCLEO 2.5 FLASH (INNEGOCIABLE)
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
       });
-      
       const data = await response.json();
-      if (data.candidates && data.candidates[0]) {
-        const aiText = data.candidates[0].content.parts[0].text;
-        setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
+      if (data.candidates) {
+        setMessages(prev => [...prev, { role: 'ai', text: data.candidates[0].content.parts[0].text }]);
       } else {
-        const errorMsg = data.error ? data.error.message : 'Respuesta denegada por el núcleo.';
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${errorMsg}` }]);
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: Error en el núcleo. ${data.error?.message || ''}` }]);
       }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
@@ -90,7 +87,7 @@ const App = () => {
       <header className="flex justify-between items-center bg-slate-900/50 p-4 rounded-2xl border border-white/5 mb-2 shadow-2xl">
         <div className="flex items-center gap-3">
           <Cpu className="text-purple-500" size={20} />
-          <h1 className="text-xl font-black tracking-tighter text-white uppercase italic">V51 GAMMA PRO</h1>
+          <h1 className="text-xl font-black tracking-tighter text-white uppercase italic">V51 GAMMA PRO 2.5</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -112,7 +109,6 @@ const App = () => {
           {nodes.map(node => (
             <a key={node.id} href={node.url} target="_blank" className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all">
               <span className="font-bold text-[10px]" style={{color: node.color}}>{node.id}</span>
-              <div className="h-1 w-1 rounded-full mt-1" style={{backgroundColor: node.color}}></div>
             </a>
           ))}
         </aside>
@@ -124,16 +120,25 @@ const App = () => {
                 <div className={`max-w-[90%] p-4 rounded-3xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
                 </div>
-                <div className="flex gap-2 mt-2 px-2">
+                
+                {/* BARRA DE HERRAMIENTAS DE COPIADO SELECTIVO */}
+                <div className="flex gap-3 mt-2 px-2">
                   {m.role === 'user' && (
                     <button onClick={() => copyToClipboard(m.text, `q-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-purple-400 transition-colors uppercase font-bold">
                       {copiedIndex === `q-${i}` ? <Check size={10}/> : <Copy size={10}/>} Copiar Pregunta
                     </button>
                   )}
                   {m.role === 'ai' && (
-                    <button onClick={() => copyToClipboard(m.text, `a-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-green-400 transition-colors uppercase font-bold">
-                      {copiedIndex === `a-${i}` ? <Check size={10}/> : <FileText size={10}/>} Solo Respuesta
-                    </button>
+                    <>
+                      <button onClick={() => copyToClipboard(m.text, `a-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-green-400 transition-colors uppercase font-bold">
+                        {copiedIndex === `a-${i}` ? <Check size={10}/> : <FileText size={10}/>} Solo Respuesta
+                      </button>
+                      {i > 0 && (
+                        <button onClick={() => copyToClipboard(`PREGUNTA:\n${messages[i-1].text}\n\nRESPUESTA:\n${m.text}`, `all-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-blue-400 transition-colors uppercase font-bold">
+                          {copiedIndex === `all-${i}` ? <Check size={10}/> : <ClipboardCopy size={10}/>} Pregunta + Respuesta
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -147,14 +152,12 @@ const App = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if(e.key==='Enter' && e.ctrlKey) handleExecute() }}
-                placeholder="Ctrl + Enter para enviar..."
+                placeholder="Escriba su orden estratégica (Ctrl+Enter para enviar)..."
                 className="flex-1 bg-transparent border-none text-xs p-2 focus:outline-none resize-none h-20 scrollbar-hide"
               />
               <div className="w-10 flex flex-col border-l border-white/10 bg-white/5">
                 <button onMouseDown={() => scrollText('up')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500"><ChevronUp size={14}/></button>
-                <button onClick={handleExecute} disabled={loading || !input.trim()} className={`flex-1 flex items-center justify-center transition-all ${loading ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500'} text-white`}>
-                  {loading ? <XCircle size={14} className="animate-pulse text-red-400" /> : <Send size={14} />}
-                </button>
+                <button onClick={handleExecute} disabled={loading || !input.trim()} className="flex-1 flex items-center justify-center bg-purple-600 text-white"><Send size={14}/></button>
                 <button onMouseDown={() => scrollText('down')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500"><ChevronDown size={14}/></button>
               </div>
             </div>
