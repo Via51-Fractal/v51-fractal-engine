@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-react';
+import { Activity, Shield, Database, Layout, Send, Cpu, Terminal, ChevronUp, ChevronDown } from 'lucide-react';
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma optimizado. Las burbujas ahora son elásticas y el núcleo Gemini ha sido calibrado. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma recalibrado. Controles de precisión activos. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
+  // Carga de la llave desde la Caja Fuerte de Vercel
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -24,7 +26,6 @@ const App = () => {
     setLoading(true);
 
     try {
-      // Cambio a la ruta estable v1 para evitar el error 404 detectado
       const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,17 +33,23 @@ const App = () => {
       });
       
       const data = await response.json();
-      if (data.candidates && data.candidates[0]) {
+      if (data.error) {
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${data.error.message}` }]);
+      } else if (data.candidates && data.candidates[0]) {
         const aiText = data.candidates[0].content.parts[0].text;
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
-      } else {
-        const errorMsg = data.error ? data.error.message : 'Respuesta denegada por el núcleo.';
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${errorMsg}` }]);
       }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const scrollText = (direction: 'up' | 'down') => {
+    if (textareaRef.current) {
+      const amount = 40;
+      textareaRef.current.scrollTop += (direction === 'up' ? -amount : amount);
     }
   };
 
@@ -81,40 +88,56 @@ const App = () => {
               <Terminal size={12} className="text-purple-400" />
               <h2 className="font-bold text-purple-400 uppercase text-[9px] tracking-widest">Consola Agéntica</h2>
             </div>
+            {loading && <span className="text-[10px] text-purple-400 animate-pulse uppercase font-black">Procesando...</span>}
           </div>
           
-          {/* ZONA DE CHAT: Scroll solo aquí, burbujas elásticas */}
           <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5 custom-scrollbar">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[85%] p-4 rounded-3xl h-auto ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                    {m.text}
-                  </p>
+                <div className={`max-w-[90%] p-4 rounded-3xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
                 </div>
               </div>
             ))}
           </div>
 
+          {/* ÁREA DE PROMPT RECONFIGURADA */}
           <div className="p-3 bg-black/40 border-t border-white/5">
-            <div className="flex flex-col gap-2 bg-slate-950 p-3 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all">
+            <div className="flex gap-2 bg-slate-950 p-1 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all overflow-hidden">
               <textarea 
-                rows={Math.min(input.split('\n').length, 4)}
+                ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleExecute();
-                  }
-                }}
-                placeholder="Escriba su orden (Shift+Enter para nueva línea)..."
-                className="w-full bg-transparent border-none text-xs focus:outline-none resize-none overflow-y-auto"
-                disabled={loading}
+                placeholder="Escriba su orden estratégica..."
+                className="flex-1 bg-transparent border-none text-xs p-4 focus:outline-none resize-none h-24 scrollbar-hide"
+                style={{ scrollbarWidth: 'none' }}
               />
-              <div className="flex justify-end">
-                <button onClick={handleExecute} disabled={loading || !input.trim()} className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full transition-all">
-                  <Send size={14} />
+              
+              {/* COLUMNA DE CONTROL VERTICAL */}
+              <div className="w-10 flex flex-col border-l border-white/10 bg-white/5">
+                <button 
+                  onMouseDown={() => scrollText('up')}
+                  className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all"
+                  title="Subir texto"
+                >
+                  <ChevronUp size={16} />
+                </button>
+                
+                <button 
+                  onClick={handleExecute}
+                  disabled={loading || !input.trim()}
+                  className={`flex-1 flex items-center justify-center transition-all ${loading ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500'} text-white`}
+                  title="Enviar orden"
+                >
+                  <Send size={16} />
+                </button>
+
+                <button 
+                  onMouseDown={() => scrollText('down')}
+                  className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all"
+                  title="Bajar texto"
+                >
+                  <ChevronDown size={16} />
                 </button>
               </div>
             </div>
