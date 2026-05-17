@@ -9,6 +9,8 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
@@ -23,7 +25,7 @@ const App = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI', {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -67,10 +69,10 @@ const App = () => {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 overflow-hidden">
-        <aside className="lg:col-span-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+        <aside className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
           <h3 className="text-[10px] font-bold text-slate-500 uppercase px-2 tracking-[0.2em] mb-4">Red Trifásica</h3>
           {nodes.map(node => (
-            <a key={node.id} href={node.url} target="_blank" className="block p-5 rounded-3xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group hover:shadow-lg hover:shadow-purple-900/10">
+            <a key={node.id} href={node.url} target="_blank" className="block p-5 rounded-3xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <node.icon size={16} style={{color: node.color}} />
@@ -94,9 +96,9 @@ const App = () => {
           
           <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-6 min-h-[450px] bg-gradient-to-b from-transparent to-purple-950/5">
             {messages.map((m, i) => (
-              <div key={i} className={lex \ animate-in fade-in slide-in-from-bottom-2 duration-300}>
-                <div className={max-w-[85%] p-5 rounded-[2rem] \}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">\</p>
+              <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
+                <div className={`max-w-[85%] p-5 rounded-[2rem] ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-xl'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{m.text}</p>
                 </div>
               </div>
             ))}
@@ -110,7 +112,7 @@ const App = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleExecute()}
                 placeholder="Ingrese instrucción estratégica..."
-                className="flex-1 bg-transparent border-none px-6 py-2 text-sm focus:outline-none placeholder:text-slate-700"
+                className="flex-1 bg-transparent border-none px-6 py-2 text-sm focus:outline-none"
                 disabled={loading}
               />
               <button 
@@ -126,7 +128,7 @@ const App = () => {
       </div>
 
       <footer className="text-center py-4 border-t border-white/5">
-        <p className="text-[9px] text-slate-600 italic uppercase tracking-[0.3em]">"El orden digital precede a la prosperidad nacional."</p>
+        <p className="text-[9px] text-slate-600 italic uppercase tracking-[0.2em]">"El orden digital precede a la prosperidad nacional."</p>
       </footer>
     </div>
   );
