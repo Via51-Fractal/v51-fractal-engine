@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown } from 'lucide-react';
+import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check } from 'lucide-react';
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, núcleo Gemini 2.5 Flash sincronizado. El cerebro de la nación está operativo al 100%. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, núcleo Gemini 2.5 Flash sincronizado. Herramientas de captura de átomos activas. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(id);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   const handleExecute = async () => {
     if (!input.trim() || loading) return;
@@ -25,22 +32,17 @@ const App = () => {
     setLoading(true);
 
     try {
-      // CONEXIÓN AL MOTOR 2.5 FLASH (Confirmado por la sonda forense)
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
       });
-      
       const data = await response.json();
-      if (data.candidates && data.candidates[0]) {
-        const aiText = data.candidates[0].content.parts[0].text;
-        setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: El núcleo no pudo procesar la orden. ${data.error?.message || ''}` }]);
+      if (data.candidates) {
+        setMessages(prev => [...prev, { role: 'ai', text: data.candidates[0].content.parts[0].text }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea.' }]);
     } finally {
       setLoading(false);
     }
@@ -48,16 +50,16 @@ const App = () => {
 
   const scrollText = (direction: 'up' | 'down') => {
     if (textareaRef.current) {
-      const amount = 60;
+      const amount = 80;
       textareaRef.current.scrollTop += (direction === 'up' ? -amount : amount);
     }
   };
 
   const nodes = [
-    { id: 'ALFA', url: 'https://alfa.via51.org', color: '#22c55e', role: 'Entrega' },
-    { id: 'BETA', url: 'https://beta.via51.org', color: '#eab308', role: 'Datos' },
-    { id: 'HOLDING', url: 'https://holding.via51.org', color: '#06b6d4', role: 'Estrategia' },
-    { id: 'ROOT', url: 'https://via51.org', color: '#3b82f6', role: 'Maestro' }
+    { id: 'ALFA', url: 'https://alfa.via51.org', color: '#22c55e' },
+    { id: 'BETA', url: 'https://beta.via51.org', color: '#eab308' },
+    { id: 'HOLDING', url: 'https://holding.via51.org', color: '#06b6d4' },
+    { id: 'ROOT', url: 'https://via51.org', color: '#3b82f6' }
   ];
 
   return (
@@ -74,34 +76,54 @@ const App = () => {
       </header>
 
       <div className="flex flex-1 gap-2 overflow-hidden">
-        <aside className="w-16 md:w-48 flex flex-col gap-2">
+        <aside className="w-16 md:w-20 flex flex-col gap-2">
           {nodes.map(node => (
-            <a key={node.id} href={node.url} target="_blank" className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group">
-              <span className="font-bold text-[10px] md:text-xs" style={{color: node.color}}>{node.id}</span>
-              <div className="h-1 w-1 rounded-full mt-1" style={{backgroundColor: node.color}}></div>
+            <a key={node.id} href={node.url} target="_blank" className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all">
+              <span className="font-bold text-[10px]" style={{color: node.color}}>{node.id}</span>
             </a>
           ))}
         </aside>
 
         <main className="flex-1 flex flex-col bg-slate-900/40 rounded-3xl border border-white/5 overflow-hidden">
-          <div ref={scrollRef} className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar">
+          <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-6 custom-scrollbar">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
+              <div key={i} className={`flex flex-col ${m.role === 'ai' ? 'items-start' : 'items-end'}`}>
                 <div className={`max-w-[90%] p-4 rounded-3xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                </div>
+                
+                {/* BARRA DE HERRAMIENTAS DE COPIADO */}
+                <div className="flex gap-2 mt-2 px-2">
+                  {m.role === 'user' && (
+                    <button onClick={() => copyToClipboard(m.text, `q-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-purple-400 transition-colors uppercase font-bold">
+                      {copiedIndex === `q-${i}` ? <Check size={10}/> : <Copy size={10}/>} Copiar Pregunta
+                    </button>
+                  )}
+                  {m.role === 'ai' && (
+                    <>
+                      <button onClick={() => copyToClipboard(m.text, `a-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-green-400 transition-colors uppercase font-bold">
+                        {copiedIndex === `a-${i}` ? <Check size={10}/> : <FileText size={10}/>} Solo Respuesta
+                      </button>
+                      {i > 0 && (
+                        <button onClick={() => copyToClipboard(`PREGUNTA: ${messages[i-1].text}\n\nRESPUESTA: ${m.text}`, `all-${i}`)} className="flex items-center gap-1 text-[9px] text-slate-500 hover:text-blue-400 transition-colors uppercase font-bold">
+                          {copiedIndex === `all-${i}` ? <Check size={10}/> : <ClipboardCopy size={10}/>} Pregunta + Respuesta
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           <div className="p-4 bg-black/40 border-t border-white/5">
-            <div className="flex gap-2 bg-slate-950 p-2 rounded-2xl border border-white/10 focus-within:border-purple-500/50">
+            <div className="flex gap-2 bg-slate-950 p-2 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all overflow-hidden">
               <textarea 
                 ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if(e.key==='Enter' && e.ctrlKey) handleExecute() }}
-                placeholder="Escriba su orden estratégica (Ctrl+Enter para enviar)..."
+                placeholder="Ctrl + Enter para enviar..."
                 className="flex-1 bg-transparent border-none text-xs p-2 focus:outline-none resize-none h-20 scrollbar-hide"
               />
               <div className="w-10 flex flex-col border-l border-white/10 bg-white/5">
@@ -113,9 +135,6 @@ const App = () => {
           </div>
         </main>
       </div>
-      <footer className="text-center py-2">
-        <p className="text-[8px] text-slate-600 uppercase tracking-widest italic">"El orden digital precede a la prosperidad nacional."</p>
-      </footer>
     </div>
   );
 };
