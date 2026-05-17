@@ -3,13 +3,13 @@ import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma en modo Alta Densidad. Todo el Holding en una sola vista. ¿Cuál es su orden?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma en modo Alta Densidad. Todo el Holding en una sola vista. Â¿CuÃ¡l es su orden?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -38,7 +38,7 @@ const App = () => {
         throw new Error("Respuesta incompleta");
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Verifique su conexión o la validez de la llave de inteligencia.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Verifique su conexiÃ³n o la validez de la llave de inteligencia.' }]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ const App = () => {
           <div className="p-3 border-b border-white/5 bg-purple-500/5 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Terminal size={12} className="text-purple-400" />
-              <h2 className="font-bold text-purple-400 uppercase text-[9px] tracking-widest">Consola Agéntica</h2>
+              <h2 className="font-bold text-purple-400 uppercase text-[9px] tracking-widest">Consola AgÃ©ntica</h2>
             </div>
           </div>
           
@@ -101,7 +101,7 @@ const App = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleExecute()}
-                placeholder="Orden estratégica..."
+                placeholder="Orden estratÃ©gica..."
                 className="flex-1 bg-transparent border-none px-4 py-1 text-xs focus:outline-none"
                 disabled={loading}
               />
