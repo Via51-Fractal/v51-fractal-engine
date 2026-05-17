@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Shield, Database, Layout, Send, Cpu, Terminal, ChevronUp, ChevronDown } from 'lucide-react';
+import { Activity, Shield, Database, Layout, Send, Cpu, Terminal, ChevronUp, ChevronDown, Key } from 'lucide-react';
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma en fase. Frecuencia v1beta activada. El mando ahora responde a Ctrl + Enter. ¿Cuál es su orden?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma en fase. Monitor de llave activo. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
+  // Verificación de existencia de llave
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  const isKeyLoaded = !!GEMINI_API_KEY && GEMINI_API_KEY.length > 10;
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -25,7 +27,6 @@ const App = () => {
     setLoading(true);
 
     try {
-      // RECTIFICACIÓN: Retorno a v1beta para compatibilidad total con Gemini 1.5 Flash
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,13 +35,13 @@ const App = () => {
       
       const data = await response.json();
       if (data.error) {
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${data.error.message}` }]);
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${data.error.message} (Verifique la llave en Vercel)` }]);
       } else if (data.candidates && data.candidates[0]) {
         const aiText = data.candidates[0].content.parts[0].text;
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos remota.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
     } finally {
       setLoading(false);
     }
@@ -68,7 +69,11 @@ const App = () => {
           <h1 className="text-xl font-black tracking-tighter text-white uppercase">V51 Gamma</h1>
         </div>
         <div className="flex items-center gap-4">
-            <span className="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">9A-Activo</span>
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${isKeyLoaded ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+              <Key size={10} />
+              <span className="text-[9px] font-mono uppercase tracking-widest">{isKeyLoaded ? 'Key Active' : 'Key Missing'}</span>
+            </div>
+            <span className="text-[9px] font-mono text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20 uppercase tracking-widest">9A-Activo</span>
         </div>
       </header>
 
@@ -108,7 +113,6 @@ const App = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  // LÓGICA DE EQUILIBRIO: Ctrl + Enter envía, Enter hace salto de línea
                   if (e.key === 'Enter' && e.ctrlKey) {
                     e.preventDefault();
                     handleExecute();
@@ -123,15 +127,9 @@ const App = () => {
                 <button onMouseDown={() => scrollText('up')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all">
                   <ChevronUp size={16} />
                 </button>
-                
-                <button 
-                  onClick={handleExecute}
-                  disabled={loading || !input.trim()}
-                  className={`flex-1 flex items-center justify-center transition-all ${loading ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500'} text-white`}
-                >
+                <button onClick={handleExecute} disabled={loading || !input.trim()} className={`flex-1 flex items-center justify-center transition-all ${loading ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500'} text-white`}>
                   <Send size={16} />
                 </button>
-
                 <button onMouseDown={() => scrollText('down')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all">
                   <ChevronDown size={16} />
                 </button>
