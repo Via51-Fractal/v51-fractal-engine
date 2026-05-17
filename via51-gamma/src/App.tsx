@@ -3,12 +3,13 @@ import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma en modo Alta Densidad. Todo el Holding en una sola vista. ¿Cuál es su orden?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma en línea. Todo el Holding en una sola vista. ¿Cuál es su orden?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Intentar leer la llave desde Vercel
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
 
   useEffect(() => {
@@ -17,6 +18,12 @@ const App = () => {
 
   const handleExecute = async () => {
     if (!input.trim() || loading) return;
+    
+    if (!GEMINI_API_KEY) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR CRÍTICO: La llave de inteligencia no fue detectada en el sistema.' }]);
+      return;
+    }
+
     const userMessage = { role: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
@@ -29,14 +36,19 @@ const App = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
       });
+      
       const data = await response.json();
       if (data.candidates && data.candidates[0]) {
         const aiText = data.candidates[0].content.parts[0].text;
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
-      } else { throw new Error(); }
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', text: 'SISTEMA: Respuesta de inteligencia vacía o denegada.' }]);
+      }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Verifique la conexión o la validez de la llave de inteligencia.' }]);
-    } finally { setLoading(false); }
+      setMessages(prev => [...prev, { role: 'ai', text: 'FALLO DE RED: No se pudo establecer contacto con el núcleo Gemini.' }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const nodes = [
@@ -74,7 +86,9 @@ const App = () => {
               <Terminal size={12} className="text-purple-400" />
               <h2 className="font-bold text-purple-400 uppercase text-[9px] tracking-widest">Consola Agéntica</h2>
             </div>
+            {loading && <span className="text-[10px] text-purple-400 animate-pulse uppercase font-black">Procesando...</span>}
           </div>
+          
           <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
@@ -84,6 +98,7 @@ const App = () => {
               </div>
             ))}
           </div>
+
           <div className="p-3 bg-black/40 border-t border-white/5">
             <div className="flex gap-2 bg-slate-950 p-1 rounded-full border border-white/10 focus-within:border-purple-500/50">
               <input 
@@ -102,10 +117,12 @@ const App = () => {
           </div>
         </main>
       </div>
+
       <footer className="text-center py-2">
         <p className="text-[8px] text-slate-600 uppercase tracking-widest">"El orden digital precede a la prosperidad nacional."</p>
       </footer>
     </div>
   );
 };
+
 export default App;
