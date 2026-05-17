@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check, Clock, XCircle } from 'lucide-react';
+import { Cpu, Send, Terminal, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check, Clock, XCircle, Key } from 'lucide-react';
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma operativo. Monitor de tiempo de proceso activado. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma sincronizado con Núcleo 2.5 Flash. La red trifásica está en fase. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,12 +15,12 @@ const App = () => {
   const timerRef = useRef<any>(null);
 
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+  const isKeyLoaded = !!GEMINI_API_KEY && GEMINI_API_KEY.length > 10;
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-  // Lógica del Cronómetro
   useEffect(() => {
     if (loading) {
       const start = Date.now();
@@ -49,19 +49,23 @@ const App = () => {
     setTimer(0);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      // RECTIFICACIÓN MAESTRA: Uso de gemini-2.5-flash (Validado por sonda forense)
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
       });
+      
       const data = await response.json();
-      if (data.candidates) {
-        setMessages(prev => [...prev, { role: 'ai', text: data.candidates[0].content.parts[0].text }]);
+      if (data.candidates && data.candidates[0]) {
+        const aiText = data.candidates[0].content.parts[0].text;
+        setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: Error en respuesta. ${data.error?.message || ''}` }]);
+        const errorMsg = data.error ? data.error.message : 'Respuesta denegada por el núcleo.';
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: ${errorMsg}` }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Tiempo de espera agotado o fallo de red.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
     } finally {
       setLoading(false);
     }
@@ -74,9 +78,16 @@ const App = () => {
     }
   };
 
+  const nodes = [
+    { id: 'ALFA', url: 'https://alfa.via51.org', color: '#22c55e' },
+    { id: 'BETA', url: 'https://beta.via51.org', color: '#eab308' },
+    { id: 'HOLDING', url: 'https://holding.via51.org', color: '#06b6d4' },
+    { id: 'ROOT', url: 'https://via51.org', color: '#3b82f6' }
+  ];
+
   return (
     <div className="h-screen bg-[#020617] text-slate-200 font-sans p-2 md:p-4 flex flex-col overflow-hidden">
-      <header className="flex justify-between items-center bg-slate-900/50 p-4 rounded-2xl border border-white/5 mb-2">
+      <header className="flex justify-between items-center bg-slate-900/50 p-4 rounded-2xl border border-white/5 mb-2 shadow-2xl">
         <div className="flex items-center gap-3">
           <Cpu className="text-purple-500" size={20} />
           <h1 className="text-xl font-black tracking-tighter text-white uppercase italic">V51 GAMMA PRO</h1>
@@ -89,15 +100,24 @@ const App = () => {
               <span className="text-[10px] font-mono text-purple-400 font-bold">{timer}s</span>
             </div>
           )}
-          <div className="bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full flex items-center gap-2">
-            <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-[9px] font-mono text-green-400 uppercase font-bold tracking-widest">9A-OPERATIONAL</span>
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${isKeyLoaded ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+            <Key size={10} />
+            <span className="text-[9px] font-mono uppercase font-bold">{isKeyLoaded ? 'Key Active' : 'Key Missing'}</span>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 gap-2 overflow-hidden">
-        <main className="flex-1 flex flex-col bg-slate-900/40 rounded-3xl border border-white/5 overflow-hidden">
+        <aside className="w-16 md:w-20 flex flex-col gap-2">
+          {nodes.map(node => (
+            <a key={node.id} href={node.url} target="_blank" className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all">
+              <span className="font-bold text-[10px]" style={{color: node.color}}>{node.id}</span>
+              <div className="h-1 w-1 rounded-full mt-1" style={{backgroundColor: node.color}}></div>
+            </a>
+          ))}
+        </aside>
+
+        <main className="flex-1 flex flex-col bg-slate-900/40 rounded-3xl border border-white/5 overflow-hidden shadow-inner">
           <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-6 custom-scrollbar">
             {messages.map((m, i) => (
               <div key={i} className={`flex flex-col ${m.role === 'ai' ? 'items-start' : 'items-end'}`}>
@@ -141,6 +161,9 @@ const App = () => {
           </div>
         </main>
       </div>
+      <footer className="text-center py-2">
+        <p className="text-[8px] text-slate-600 uppercase tracking-widest italic">"El orden digital precede a la prosperidad nacional."</p>
+      </footer>
     </div>
   );
 };
