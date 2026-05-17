@@ -3,13 +3,12 @@ import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma en línea. Todo el Holding en una sola vista. ¿Cuál es su orden?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma optimizado. El prompt ahora soporta múltiples líneas. ¿Cuál es su orden estratégica?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Intentar leer la llave desde Vercel
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
 
   useEffect(() => {
@@ -19,11 +18,6 @@ const App = () => {
   const handleExecute = async () => {
     if (!input.trim() || loading) return;
     
-    if (!GEMINI_API_KEY) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR CRÍTICO: La llave de inteligencia no fue detectada en el sistema.' }]);
-      return;
-    }
-
     const userMessage = { role: 'user', text: input };
     setMessages(prev => [...prev, userMessage]);
     const currentInput = input;
@@ -38,14 +32,17 @@ const App = () => {
       });
       
       const data = await response.json();
-      if (data.candidates && data.candidates[0]) {
+      
+      if (data.error) {
+        setMessages(prev => [...prev, { role: 'ai', text: `ERROR DEL NÚCLEO: ${data.error.message} (Código: ${data.error.code})` }]);
+      } else if (data.candidates && data.candidates[0]) {
         const aiText = data.candidates[0].content.parts[0].text;
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: 'SISTEMA: Respuesta de inteligencia vacía o denegada.' }]);
+        setMessages(prev => [...prev, { role: 'ai', text: 'SISTEMA: El núcleo Gemini no devolvió datos. Verifique la configuración de la llave.' }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'FALLO DE RED: No se pudo establecer contacto con el núcleo Gemini.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'FALLO DE RED: Interferencia total en la línea de datos.' }]);
     } finally {
       setLoading(false);
     }
@@ -66,7 +63,7 @@ const App = () => {
           <h1 className="text-xl font-black tracking-tighter text-white uppercase">V51 Gamma</h1>
         </div>
         <div className="flex items-center gap-4">
-            <span className="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 uppercase">9A-Activo</span>
+            <span className="text-[9px] font-mono text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20 uppercase tracking-widest">9A-Activo</span>
         </div>
       </header>
 
@@ -75,7 +72,7 @@ const App = () => {
           {nodes.map(node => (
             <a key={node.id} href={node.url} target="_blank" className="flex-1 flex flex-col items-center justify-center rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group">
               <node.icon size={18} style={{color: node.color}} />
-              <span className="hidden md:block font-bold text-[10px] mt-1" style={{color: node.color}}>{node.id}</span>
+              <span className="hidden md:block font-bold text-[10px] mt-1 uppercase" style={{color: node.color}}>{node.id}</span>
             </a>
           ))}
         </aside>
@@ -92,7 +89,7 @@ const App = () => {
           <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[90%] p-3 rounded-2xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white'}`}>
+                <div className={`max-w-[90%] p-4 rounded-2xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
                   <p className="text-xs leading-relaxed whitespace-pre-wrap">{m.text}</p>
                 </div>
               </div>
@@ -100,29 +97,38 @@ const App = () => {
           </div>
 
           <div className="p-3 bg-black/40 border-t border-white/5">
-            <div className="flex gap-2 bg-slate-950 p-1 rounded-full border border-white/10 focus-within:border-purple-500/50">
-              <input 
-                type="text"
+            <div className="flex flex-col gap-2 bg-slate-950 p-3 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all">
+              <textarea 
+                rows={Math.min(input.split('\n').length, 4)}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleExecute()}
-                placeholder="Orden estratégica..."
-                className="flex-1 bg-transparent border-none px-4 py-1 text-xs focus:outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleExecute();
+                  }
+                }}
+                placeholder="Escriba su orden (Shift+Enter para nueva línea)..."
+                className="w-full bg-transparent border-none text-xs focus:outline-none resize-none overflow-y-auto custom-scrollbar"
                 disabled={loading}
               />
-              <button onClick={handleExecute} disabled={loading || !input.trim()} className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full transition-all">
-                <Send size={14} />
-              </button>
+              <div className="flex justify-end">
+                <button 
+                  onClick={handleExecute} 
+                  disabled={loading || !input.trim()} 
+                  className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded-full transition-all"
+                >
+                  <Send size={14} />
+                </button>
+              </div>
             </div>
           </div>
         </main>
       </div>
-
       <footer className="text-center py-2">
-        <p className="text-[8px] text-slate-600 uppercase tracking-widest">"El orden digital precede a la prosperidad nacional."</p>
+        <p className="text-[8px] text-slate-600 uppercase tracking-widest italic">"El orden digital precede a la prosperidad nacional."</p>
       </footer>
     </div>
   );
 };
-
 export default App;
