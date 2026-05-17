@@ -3,15 +3,14 @@ import { Activity, Shield, Database, Layout, Send, Cpu, Terminal, ChevronUp, Che
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador, sistema Gamma recalibrado. Controles de precisión activos. ¿Cuál es su orden estratégica?' }
+    { role: 'ai', text: 'Gobernador, sistema Gamma en fase. Frecuencia v1beta activada. El mando ahora responde a Ctrl + Enter. ¿Cuál es su orden?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Carga de la llave desde la Caja Fuerte de Vercel
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+  const GEMINI_API_KEY = "AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI"; 
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -26,7 +25,8 @@ const App = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      // RECTIFICACIÓN: Retorno a v1beta para compatibilidad total con Gemini 1.5 Flash
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
@@ -40,7 +40,7 @@ const App = () => {
         setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea de datos remota.' }]);
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ const App = () => {
 
   const scrollText = (direction: 'up' | 'down') => {
     if (textareaRef.current) {
-      const amount = 40;
+      const amount = 60;
       textareaRef.current.scrollTop += (direction === 'up' ? -amount : amount);
     }
   };
@@ -94,32 +94,33 @@ const App = () => {
           <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-gradient-to-b from-transparent to-purple-950/5 custom-scrollbar">
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[90%] p-4 rounded-3xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                <div className={`max-w-[90%] p-4 rounded-3xl h-auto ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white shadow-lg'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{m.text}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* ÁREA DE PROMPT RECONFIGURADA */}
           <div className="p-3 bg-black/40 border-t border-white/5">
             <div className="flex gap-2 bg-slate-950 p-1 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all overflow-hidden">
               <textarea 
                 ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Escriba su orden estratégica..."
+                onKeyDown={(e) => {
+                  // LÓGICA DE EQUILIBRIO: Ctrl + Enter envía, Enter hace salto de línea
+                  if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    handleExecute();
+                  }
+                }}
+                placeholder="Escriba su orden estratégica (Ctrl+Enter para enviar)..."
                 className="flex-1 bg-transparent border-none text-xs p-4 focus:outline-none resize-none h-24 scrollbar-hide"
                 style={{ scrollbarWidth: 'none' }}
               />
               
-              {/* COLUMNA DE CONTROL VERTICAL */}
               <div className="w-10 flex flex-col border-l border-white/10 bg-white/5">
-                <button 
-                  onMouseDown={() => scrollText('up')}
-                  className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all"
-                  title="Subir texto"
-                >
+                <button onMouseDown={() => scrollText('up')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all">
                   <ChevronUp size={16} />
                 </button>
                 
@@ -127,16 +128,11 @@ const App = () => {
                   onClick={handleExecute}
                   disabled={loading || !input.trim()}
                   className={`flex-1 flex items-center justify-center transition-all ${loading ? 'bg-slate-800' : 'bg-purple-600 hover:bg-purple-500'} text-white`}
-                  title="Enviar orden"
                 >
                   <Send size={16} />
                 </button>
 
-                <button 
-                  onMouseDown={() => scrollText('down')}
-                  className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all"
-                  title="Bajar texto"
-                >
+                <button onMouseDown={() => scrollText('down')} className="flex-1 flex items-center justify-center hover:bg-white/10 text-slate-500 hover:text-white transition-all">
                   <ChevronDown size={16} />
                 </button>
               </div>
