@@ -1,80 +1,132 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Activity, Shield, Database, Layout, Send, Cpu, Terminal } from 'lucide-react';
 
 const App = () => {
-  const [messages, setMessages] = useState([{ role: 'ai', text: 'Gobernador, sistema Gamma purificado. Monitor de canales y consola de IA activos. ¿Cuál es su orden?' }]);
+  const [messages, setMessages] = useState([
+    { role: 'ai', text: 'Gobernador, sistema Gamma purificado. Conexión agéntica activa con Gemini 1.5 Flash. ¿Cuál es su orden estratégica para la nación?' }
+  ]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages]);
+
+  const handleExecute = async () => {
+    if (!input.trim() || loading) return;
+    
+    const userMessage = { role: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
+    setInput('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCoJQYnR2YA06Uf-gL6casRio9aZUcDYzI', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: currentInput }] }]
+        })
+      });
+      
+      const data = await response.json();
+      const aiText = data.candidates[0].content.parts[0].text;
+      setMessages(prev => [...prev, { role: 'ai', text: aiText }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la conexión con el núcleo de inteligencia.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const nodes = [
-    { id: 'ALFA', url: 'https://alfa.via51.org', color: '#22c55e', role: 'Entrega' },
-    { id: 'BETA', url: 'https://beta.via51.org', color: '#eab308', role: 'Datos' },
-    { id: 'HOLDING', url: 'https://holding.via51.org', color: '#06b6d4', role: 'Estrategia' },
-    { id: 'ROOT', url: 'https://via51.org', color: '#3b82f6', role: 'Maestro' }
+    { id: 'ALFA', url: 'https://alfa.via51.org', color: '#22c55e', role: 'Entrega', icon: Layout },
+    { id: 'BETA', url: 'https://beta.via51.org', color: '#eab308', role: 'Datos', icon: Database },
+    { id: 'HOLDING', url: 'https://holding.via51.org', color: '#06b6d4', role: 'Estrategia', icon: Shield },
+    { id: 'ROOT', url: 'https://via51.org', color: '#3b82f6', role: 'Maestro', icon: Activity }
   ];
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-200 font-sans p-4 md:p-8 flex flex-col gap-6">
-      {/* Header Soberano */}
-      <header className="flex justify-between items-center bg-slate-900/50 p-6 rounded-3xl border border-white/5">
-        <div>
-          <h1 className="text-2xl font-black tracking-tighter text-purple-500 uppercase">V51 Gamma Command</h1>
-          <p className="text-[10px] text-slate-500 uppercase tracking-[0.3em]">Soberanía Nivel 9A</p>
+      <header className="flex justify-between items-center bg-slate-900/50 p-6 rounded-3xl border border-white/5 backdrop-blur-xl shadow-2xl">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+            <Cpu className="text-purple-500" size={24} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter text-white uppercase">V51 Gamma Command</h1>
+            <p className="text-[10px] text-slate-500 uppercase tracking-[0.3em]">Soberanía Nivel 9A • Fredy Bazalar</p>
+          </div>
         </div>
-        <div className="text-right">
-          <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse inline-block mr-2"></div>
-          <span className="text-xs font-mono text-green-400">SISTEMA EN FASE</span>
+        <div className="hidden md:flex items-center gap-3 bg-black/30 px-4 py-2 rounded-2xl border border-white/5">
+          <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-[10px] font-mono text-green-400 uppercase tracking-widest">Núcleo en Fase</span>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1">
-        {/* Panel Izquierdo: Monitor de Canales */}
-        <aside className="lg:col-span-1 space-y-4">
-          <h3 className="text-xs font-bold text-slate-500 uppercase px-2">Red Trifásica</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 overflow-hidden">
+        <aside className="lg:col-span-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+          <h3 className="text-[10px] font-bold text-slate-500 uppercase px-2 tracking-[0.2em] mb-4">Red Trifásica</h3>
           {nodes.map(node => (
-            <a key={node.id} href={node.url} target="_blank" className="block p-4 rounded-2xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group">
+            <a key={node.id} href={node.url} target="_blank" className="block p-5 rounded-3xl bg-slate-900/40 border border-white/5 hover:border-purple-500/50 transition-all group hover:shadow-lg hover:shadow-purple-900/10">
               <div className="flex justify-between items-center">
-                <span className="font-bold text-lg" style={{color: node.color}}>{node.id}</span>
+                <div className="flex items-center gap-3">
+                  <node.icon size={16} style={{color: node.color}} />
+                  <span className="font-bold text-lg" style={{color: node.color}}>{node.id}</span>
+                </div>
                 <div className="h-1.5 w-1.5 rounded-full" style={{backgroundColor: node.color}}></div>
               </div>
-              <p className="text-[10px] text-slate-500 uppercase mt-1">{node.role}</p>
+              <p className="text-[10px] text-slate-500 uppercase mt-2 tracking-widest">{node.role}</p>
             </a>
           ))}
         </aside>
 
-        {/* Panel Central: Consola de IA */}
-        <main className="lg:col-span-3 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-white/5 overflow-hidden">
-          <div className="p-6 border-b border-white/5 bg-purple-500/5">
-            <h2 className="font-bold text-purple-400 uppercase text-sm tracking-widest">Consola Agéntica (Gemini Core)</h2>
+        <main className="lg:col-span-3 flex flex-col bg-slate-900/40 rounded-[2.5rem] border border-white/5 overflow-hidden backdrop-blur-sm shadow-inner">
+          <div className="p-6 border-b border-white/5 bg-purple-500/5 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Terminal size={14} className="text-purple-400" />
+              <h2 className="font-bold text-purple-400 uppercase text-[10px] tracking-[0.2em]">Consola Agéntica</h2>
+            </div>
+            {loading && <span className="text-[10px] text-purple-400 animate-pulse uppercase font-black">Procesando...</span>}
           </div>
           
-          <div className="flex-1 p-6 overflow-y-auto space-y-4 min-h-[400px]">
+          <div ref={scrollRef} className="flex-1 p-8 overflow-y-auto space-y-6 min-h-[450px] bg-gradient-to-b from-transparent to-purple-950/5">
             {messages.map((m, i) => (
-              <div key={i} className={`flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[85%] p-4 rounded-2xl ${m.role === 'ai' ? 'bg-white/5 text-slate-300 border border-white/10' : 'bg-purple-600 text-white'}`}>
-                  <p className="text-sm leading-relaxed">{m.text}</p>
+              <div key={i} className={lex \ animate-in fade-in slide-in-from-bottom-2 duration-300}>
+                <div className={max-w-[85%] p-5 rounded-[2rem] \}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap font-medium">\</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="p-6 bg-black/20 border-t border-white/5">
-            <div className="flex gap-3">
+          <div className="p-6 bg-black/40 border-t border-white/5">
+            <div className="flex gap-3 bg-slate-950 p-2 rounded-[2rem] border border-white/10 focus-within:border-purple-500/50 transition-all shadow-2xl">
               <input 
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ingrese instrucción de mando..."
-                className="flex-1 bg-slate-950 border border-white/10 rounded-2xl px-6 py-3 text-sm focus:outline-none focus:border-purple-500 transition-all"
+                onKeyPress={(e) => e.key === 'Enter' && handleExecute()}
+                placeholder="Ingrese instrucción estratégica..."
+                className="flex-1 bg-transparent border-none px-6 py-2 text-sm focus:outline-none placeholder:text-slate-700"
+                disabled={loading}
               />
-              <button className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-2xl font-bold text-sm transition-all uppercase tracking-widest">
-                Ejecutar
+              <button 
+                onClick={handleExecute}
+                disabled={loading || !input.trim()}
+                className="bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 text-white p-4 rounded-full transition-all flex items-center justify-center shadow-lg shadow-purple-900/40"
+              >
+                <Send size={18} />
               </button>
             </div>
           </div>
         </main>
       </div>
 
-      <footer className="text-center py-4">
-        <p className="text-[10px] text-slate-600 italic">"El orden digital precede a la prosperidad nacional."</p>
+      <footer className="text-center py-4 border-t border-white/5">
+        <p className="text-[9px] text-slate-600 italic uppercase tracking-[0.3em]">"El orden digital precede a la prosperidad nacional."</p>
       </footer>
     </div>
   );
