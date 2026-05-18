@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vía51 - Holding Digital</title>
+    <title>Vía51 - Laboratorio Maestro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
@@ -20,13 +20,11 @@
     <div class="phone-frame border-slate-800 shadow-2xl">
         <div class="flex-1 p-8 flex flex-col justify-between relative z-10">
             
-            <!-- LÍNEA 1: CIUDAD (IZQ) Y CONTADOR (DER) -->
             <header class="mt-2">
+                <!-- LÍNEA 1: CIUDAD (IZQUIERDA) Y CONTADOR (DERECHA) -->
                 <div class="flex justify-between items-center mb-1">
-                    <span id="city-display" class="text-[10px] font-black gold-glow uppercase tracking-[0.2em]">Detectando...</span>
-                    <span class="text-[10px] silver-text font-medium uppercase tracking-widest">
-                        visitante: <span id="visit-count" class="text-white font-black">...</span>
-                    </span>
+                    <span id="city-display" class="text-[10px] font-black gold-glow uppercase tracking-widest">Detectando...</span>
+                    <span class="text-[10px] silver-text font-medium uppercase">visitante: <span id="visit-count" class="text-white">...</span></span>
                 </div>
                 
                 <!-- LÍNEA 2: RIEL DE IDIOMAS -->
@@ -36,22 +34,21 @@
                     <button id="btn-en" class="lang-btn bg-white/5 text-slate-500">ENGLISH</button>
                 </div>
 
-                <div class="h-[1px] w-full bg-gradient-to-r from-gold via-white/10 to-transparent mt-6"></div>
+                <div class="h-[1px] w-full bg-white/10 mt-6"></div>
             </header>
 
             <main class="flex-1 flex flex-col justify-center gap-6">
-                <h1 id="main-title" class="text-4xl font-black gold-glow leading-tight uppercase tracking-tighter">
-                    VIA51 - HOLDING<br/>DIGITAL
-                </h1>
+                <!-- TÍTULO ACTUALIZADO -->
+                <h1 id="main-title" class="text-4xl font-black gold-glow leading-none uppercase tracking-tighter">VIA51 -<br/>HOLDING DIGITAL</h1>
                 <div class="glass-card p-6 rounded-[2rem]">
                     <p id="purpose-text" class="text-lg font-medium leading-tight silver-text">
-                        Cargando propósito supremo...
+                        Hacer del Perú un país de desarrollo sostenible de Calidad Mundial.
                     </p>
                 </div>
             </main>
 
             <footer>
-                <p class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-40">
+                <p class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-50">
                     "Dataqa qasikaypa atómom. Atómo ch'uya kaptinqa, llaqtaqa mana p'akikuqmi."
                 </p>
             </footer>
@@ -67,29 +64,27 @@
                 const geoRes = await fetch('https://ipapi.co/json/');
                 const geoData = await geoRes.json();
                 const city = geoData.city || "LIMA";
-                const country = geoData.country_name;
                 
                 document.getElementById('city-display').innerText = city;
 
-                // Registro en Supabase
                 await fetch(`${SB_URL}/rest/v1/city_visits`, {
                     method: 'POST',
                     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ city_name: city, visitor_ip: geoData.ip })
                 });
 
-                // Conteo territorial
                 const countRes = await fetch(`${SB_URL}/rest/v1/city_visits?city_name=eq.${city}&select=count`, {
                     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Prefer': 'count=exact' }
                 });
                 const count = countRes.headers.get('content-range').split('/')[1];
                 document.getElementById('visit-count').innerText = count;
 
-                // Idioma por defecto
-                setLanguage(country === "Peru" ? 'es' : 'en');
+                if (geoData.country_name === "Peru") setLanguage('es');
+                else if (["United States", "United Kingdom"].includes(geoData.country_name)) setLanguage('en');
+                else setLanguage('es');
 
             } catch (e) {
-                document.getElementById('city-display').innerText = "ERROR RED";
+                document.getElementById('city-display').innerText = "OFFLINE";
             }
         }
 
@@ -99,9 +94,9 @@
             btns[lang].classList.add('lang-active');
 
             const content = {
-                es: { title: "VIA51 - HOLDING<br/>DIGITAL", purpose: "Hacer del Perú un país de desarrollo sostenible de Calidad Mundial." },
-                qu: { title: "VIA51 - QAPAQ<br/>HUÑUY", purpose: "Perú suyuta teqsimuyuntinpi allin kawsayniyuq ruranapaq." },
-                en: { title: "VIA51 - DIGITAL<br/>HOLDING", purpose: "To make Peru a country of world-class sustainable development." }
+                es: { title: "VIA51 -<br/>HOLDING DIGITAL", purpose: "Hacer del Perú un país de desarrollo sostenible de Calidad Mundial." },
+                qu: { title: "VIA51 -<br/>QHAPAQ LLAMKAY", purpose: "Perú suyuta teqsimuyuntinpi allin kawsayniyuq ruranapaq." },
+                en: { title: "VIA51 -<br/>DIGITAL HOLDING", purpose: "To make Peru a country of world-class sustainable development." }
             };
             document.getElementById('main-title').innerHTML = content[lang].title;
             document.getElementById('purpose-text').innerText = content[lang].purpose;
