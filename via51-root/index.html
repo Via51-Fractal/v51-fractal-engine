@@ -3,56 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vía51 - ROOT</title>
+    <title>Vía51 - Laboratorio Maestro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #020617; }
-        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .glow { box-shadow: 0 0 50px -12px #D4AF37; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #ffffff; }
+        .phone-frame { 
+            width: 360px; height: 740px; 
+            background: #020617; 
+            border: 12px solid #1e293b; 
+            border-radius: 3.5rem; 
+            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.15);
+        }
+        .gold-glow { text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); color: #D4AF37; }
+        .silver-text { color: #C0C2C9; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(15px); 
+            border: 1px solid rgba(192, 194, 201, 0.1); 
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
     </style>
 </head>
-<body class="text-white min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-4xl w-full glass glow p-8 md:p-16 rounded-[3rem] relative overflow-hidden">
-        
-        <!-- Identificador Fractal de Fondo -->
-        <div class="absolute -top-10 -right-10 opacity-[0.05] font-black text-[15rem] pointer-events-none select-none">
-            ROOT
+<body class="min-h-screen flex items-center justify-center p-6">
+    <!-- Simulación de Celular -->
+    <div class="phone-frame relative overflow-hidden flex flex-col border-slate-800">
+        <!-- Barra de Estado Superior -->
+        <div class="h-8 w-full flex justify-between items-center px-8 pt-4">
+            <span class="text-[10px] font-bold silver-text">09:41</span>
+            <div class="flex gap-1">
+                <div class="w-3 h-3 border border-slate-600 rounded-sm"></div>
+                <div class="w-3 h-3 border border-slate-600 rounded-sm"></div>
+            </div>
         </div>
-        
-        <div class="relative z-10">
-            <header class="flex items-center gap-4 mb-12">
-                <div class="h-1 w-16 rounded-full" style="background-color: #D4AF37"></div>
-                <span class="text-slate-500 font-bold tracking-[0.4em] text-[10px] uppercase">V51-FRACTAL-ENGINE / STABLE</span>
+
+        <div class="flex-1 p-8 flex flex-col justify-between relative z-10">
+            <header class="mt-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="status-dot animate-pulse"></div>
+                    <p class="text-[10px] font-black tracking-[0.5em] silver-text uppercase">V51 / LAB</p>
+                </div>
+                <h1 class="text-5xl font-black gold-glow leading-none uppercase tracking-tighter">Nación<br/>Digital</h1>
             </header>
 
-            <main>
-                <h2 class="text-slate-400 font-light text-xl md:text-2xl mb-2 uppercase tracking-tighter">Nodo de Soberanía</h2>
-                <h1 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter uppercase leading-none" style="color: #D4AF37">
-                    COMANDO MAESTRO
-                </h1>
-                
-                <div class="bg-white/5 p-6 md:p-10 rounded-3xl border border-white/5 mb-12">
-                    <p class="text-2xl md:text-4xl font-medium italic text-slate-100 leading-tight">
-                        "El dato es el átomo de la soberanía."
+            <main class="flex-1 flex flex-col justify-center gap-6">
+                <div class="glass-card p-6 rounded-[2.5rem]">
+                    <h2 class="text-white font-bold text-xs uppercase tracking-widest mb-3 opacity-50">Propósito Supremo</h2>
+                    <p class="text-lg font-medium leading-tight">
+                        Hacer del Perú un país de desarrollo sostenible de <span class="gold-glow">Calidad Mundial</span>.
                     </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 rounded-3xl text-center">
+                        <p class="text-[8px] silver-text font-bold uppercase mb-1 tracking-widest">Soberanía</p>
+                        <p class="text-2xl font-black gold-glow">9A</p>
+                    </div>
+                    <div class="glass-card p-4 rounded-3xl text-center">
+                        <p class="text-[8px] silver-text font-bold uppercase mb-1 tracking-widest">Frecuencia</p>
+                        <p class="text-2xl font-black text-white">60<span class="text-xs">Hz</span></p>
+                    </div>
                 </div>
             </main>
 
-            <footer class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/10 pt-10">
-                <div>
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estatus de Red</p>
-                    <div class="flex items-center gap-2 mt-1">
-                        <div class="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <p class="text-xs font-mono text-green-400 uppercase">Sincronizado / 60Hz Digital</p>
-                    </div>
-                </div>
-                <div class="md:text-right">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Gobernador Digital</p>
-                    <p class="text-sm font-bold text-slate-300">Nivel 9A - Fredy Bazalar</p>
-                </div>
+            <footer class="mb-4">
+                <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-6"></div>
+                <p class="text-[10px] silver-text text-center italic leading-relaxed px-4">
+                    "Dataqa qasikaypa atómom. Atómo ch'uya kaptinqa, llaqtaqa mana p'akikuqmi."
+                </p>
             </footer>
         </div>
+
+        <!-- Decoración Fractal de Fondo -->
+        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-[#D4AF37] opacity-[0.07] blur-[80px]"></div>
+        <div class="absolute top-20 -left-20 w-48 h-48 bg-[#C0C2C9] opacity-[0.05] blur-[60px]"></div>
     </div>
 </body>
 </html>
