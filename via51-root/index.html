@@ -3,80 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vía51 - Laboratorio Maestro</title>
+    <title>Vía51 - Soberanía Territorial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #000000; color: #ffffff; }
-        .phone-frame { 
-            width: 360px; height: 740px; 
-            background: #020617; 
-            border: 12px solid #1e293b; 
-            border-radius: 3.5rem; 
-            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.15);
-        }
-        .gold-glow { text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); color: #D4AF37; }
+        .phone-frame { width: 360px; height: 740px; background: #020617; border: 12px solid #1e293b; border-radius: 3.5rem; position: relative; overflow: hidden; display: flex; flex-col; }
+        .gold-glow { color: #D4AF37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
         .silver-text { color: #C0C2C9; }
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(15px); 
-            border: 1px solid rgba(192, 194, 201, 0.1); 
-        }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(192, 194, 201, 0.1); }
+        .lang-btn { padding: 6px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .lang-active { background: #D4AF37; color: #000; border-color: #D4AF37; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
-    <!-- Simulación de Celular -->
-    <div class="phone-frame relative overflow-hidden flex flex-col border-slate-800">
-        <!-- Barra de Estado Superior -->
-        <div class="h-8 w-full flex justify-between items-center px-8 pt-4">
-            <span class="text-[10px] font-bold silver-text">09:41</span>
-            <div class="flex gap-1">
-                <div class="w-3 h-3 border border-slate-600 rounded-sm"></div>
-                <div class="w-3 h-3 border border-slate-600 rounded-sm"></div>
-            </div>
-        </div>
-
+    <div class="phone-frame border-slate-800 shadow-2xl">
         <div class="flex-1 p-8 flex flex-col justify-between relative z-10">
-            <header class="mt-4">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="status-dot animate-pulse"></div>
-                    <p class="text-[10px] font-black tracking-[0.5em] silver-text uppercase">V51 / LAB</p>
+            
+            <!-- LÍNEA 1: HORA, CIUDAD Y CONTADOR -->
+            <header class="mt-2">
+                <div class="flex justify-between items-center mb-1">
+                    <span id="live-clock" class="text-[10px] font-bold silver-text">00:00</span>
+                    <div class="flex items-center gap-2">
+                        <span id="city-display" class="text-[10px] font-black gold-glow uppercase tracking-tighter">Detectando...</span>
+                        <span class="text-[10px] opacity-30">|</span>
+                        <span class="text-[10px] silver-text font-medium">visitante: <span id="visit-count" class="text-white">...</span></span>
+                    </div>
                 </div>
-                <h1 class="text-5xl font-black gold-glow leading-none uppercase tracking-tighter">Nación<br/>Digital</h1>
+                
+                <!-- LÍNEA 2: RIEL DE IDIOMAS -->
+                <div class="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
+                    <button id="btn-es" class="lang-btn bg-white/5 text-slate-500">ESPAÑOL</button>
+                    <button id="btn-qu" class="lang-btn bg-white/5 text-slate-500">RUNA SIMI</button>
+                    <button id="btn-en" class="lang-btn bg-white/5 text-slate-500">ENGLISH</button>
+                </div>
+
+                <div class="h-[1px] w-full bg-white/10 mt-6"></div>
             </header>
 
             <main class="flex-1 flex flex-col justify-center gap-6">
-                <div class="glass-card p-6 rounded-[2.5rem]">
-                    <h2 class="text-white font-bold text-xs uppercase tracking-widest mb-3 opacity-50">Propósito Supremo</h2>
-                    <p class="text-lg font-medium leading-tight">
-                        Hacer del Perú un país de desarrollo sostenible de <span class="gold-glow">Calidad Mundial</span>.
+                <h1 id="main-title" class="text-5xl font-black gold-glow leading-none uppercase tracking-tighter">Nación<br/>Digital</h1>
+                <div class="glass-card p-6 rounded-[2rem]">
+                    <p id="purpose-text" class="text-lg font-medium leading-tight silver-text">
+                        Cargando propósito...
                     </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="glass-card p-4 rounded-3xl text-center">
-                        <p class="text-[8px] silver-text font-bold uppercase mb-1 tracking-widest">Soberanía</p>
-                        <p class="text-2xl font-black gold-glow">9A</p>
-                    </div>
-                    <div class="glass-card p-4 rounded-3xl text-center">
-                        <p class="text-[8px] silver-text font-bold uppercase mb-1 tracking-widest">Frecuencia</p>
-                        <p class="text-2xl font-black text-white">60<span class="text-xs">Hz</span></p>
-                    </div>
                 </div>
             </main>
 
-            <footer class="mb-4">
-                <div class="h-[2px] w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent mb-6"></div>
-                <p class="text-[10px] silver-text text-center italic leading-relaxed px-4">
+            <footer>
+                <p class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-50">
                     "Dataqa qasikaypa atómom. Atómo ch'uya kaptinqa, llaqtaqa mana p'akikuqmi."
                 </p>
             </footer>
         </div>
-
-        <!-- Decoración Fractal de Fondo -->
-        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-[#D4AF37] opacity-[0.07] blur-[80px]"></div>
-        <div class="absolute top-20 -left-20 w-48 h-48 bg-[#C0C2C9] opacity-[0.05] blur-[60px]"></div>
     </div>
+
+    <script>
+        const SB_URL = "https://ibhhzgtxaqwdykedhtvk.supabase.co";
+        const SB_KEY = "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK";
+
+        // 1. Reloj en tiempo real
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString('es-PE', { hour12: false, hour: '2-digit', minute: '2-digit' });
+        }, 1000);
+
+        async function initSovereignty() {
+            try {
+                // 2. Geo-detección (IP y Ciudad)
+                const geoRes = await fetch('https://ipapi.co/json/');
+                const geoData = await geoRes.json();
+                const city = geoData.city || "Lima";
+                const country = geoData.country_name;
+                
+                document.getElementById('city-display').innerText = city;
+
+                // 3. Registro en Supabase (BETA)
+                await fetch(`${SB_URL}/rest/v1/city_visits`, {
+                    method: 'POST',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city_name: city, visitor_ip: geoData.ip })
+                });
+
+                // 4. Obtener total de la ciudad
+                const countRes = await fetch(`${SB_URL}/rest/v1/city_visits?city_name=eq.${city}&select=count`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Prefer': 'count=exact' }
+                });
+                const count = countRes.headers.get('content-range').split('/')[1];
+                document.getElementById('visit-count').innerText = count;
+
+                // 5. Lógica de Idioma Automático
+                if (country === "Peru") {
+                    setLanguage('es');
+                } else if (["United States", "United Kingdom", "Canada"].includes(country)) {
+                    setLanguage('en');
+                } else {
+                    setLanguage('es');
+                }
+
+            } catch (e) {
+                document.getElementById('city-display').innerText = "OFFLINE";
+            }
+        }
+
+        function setLanguage(lang) {
+            const btns = { es: document.getElementById('btn-es'), qu: document.getElementById('btn-qu'), en: document.getElementById('btn-en') };
+            Object.values(btns).forEach(b => b.classList.remove('lang-active'));
+            btns[lang].classList.add('lang-active');
+
+            const content = {
+                es: { title: "Nación<br/>Digital", purpose: "Hacer del Perú un país de desarrollo sostenible de Calidad Mundial." },
+                qu: { title: "Llaqta<br/>Antañiqiq", purpose: "Perú suyuta teqsimuyuntinpi allin kawsayniyuq ruranapaq." },
+                en: { title: "Digital<br/>Nation", purpose: "To make Peru a country of world-class sustainable development." }
+            };
+            document.getElementById('main-title').innerHTML = content[lang].title;
+            document.getElementById('purpose-text').innerText = content[lang].purpose;
+        }
+
+        document.getElementById('btn-es').onclick = () => setLanguage('es');
+        document.getElementById('btn-qu').onclick = () => setLanguage('qu');
+        document.getElementById('btn-en').onclick = () => setLanguage('en');
+
+        initSovereignty();
+    </script>
 </body>
 </html>
