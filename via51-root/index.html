@@ -14,6 +14,8 @@
         .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(192, 194, 201, 0.1); }
         .lang-btn { padding: 6px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); }
         .lang-active { background: #D4AF37; color: #000; border-color: #D4AF37; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+        .btn-0c { background: linear-gradient(135deg, #D4AF37 0%, #C0C2C9 100%); color: #000; font-weight: 900; padding: 12px; border-radius: 1rem; text-align: center; font-size: 14px; letter-spacing: 0.2em; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .btn-0c:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
@@ -21,35 +23,36 @@
         <div class="flex-1 p-8 flex flex-col justify-between relative z-10">
             
             <header class="mt-2">
-                <!-- LÍNEA 1: CIUDAD (IZQUIERDA) Y CONTADOR (DERECHA) -->
                 <div class="flex justify-between items-center mb-1">
                     <span id="city-display" class="text-[10px] font-black gold-glow uppercase tracking-widest">Detectando...</span>
                     <span class="text-[10px] silver-text font-medium uppercase">visitante: <span id="visit-count" class="text-white">...</span></span>
                 </div>
                 
-                <!-- LÍNEA 2: RIEL DE IDIOMAS -->
                 <div class="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
                     <button id="btn-es" class="lang-btn bg-white/5 text-slate-500">ESPAÑOL</button>
                     <button id="btn-qu" class="lang-btn bg-white/5 text-slate-500">RUNA SIMI</button>
                     <button id="btn-en" class="lang-btn bg-white/5 text-slate-500">ENGLISH</button>
                 </div>
-
                 <div class="h-[1px] w-full bg-white/10 mt-6"></div>
             </header>
 
             <main class="flex-1 flex flex-col justify-center gap-6">
-                <!-- TÍTULO ACTUALIZADO -->
-                <h1 id="main-title" class="text-4xl font-black gold-glow leading-none uppercase tracking-tighter">VIA51 -<br/>HOLDING DIGITAL</h1>
-                <div class="glass-card p-6 rounded-[2rem]">
-                    <p id="purpose-text" class="text-lg font-medium leading-tight silver-text">
-                        Hacer del Perú un país de desarrollo sostenible de Calidad Mundial.
+                <!-- TÍTULO SIN GUION -->
+                <h1 id="main-title" class="text-4xl font-black gold-glow leading-none uppercase tracking-tighter text-center">VIA51<br/>HOLDING DIGITAL</h1>
+                
+                <div class="glass-card p-6 rounded-[2rem] text-center">
+                    <p id="purpose-text" class="text-sm font-medium leading-relaxed silver-text">
+                        Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.
                     </p>
                 </div>
+
+                <!-- BOTÓN DE INGRESO 0 - C -->
+                <button class="btn-0c uppercase">0 - C</button>
             </main>
 
             <footer>
-                <p class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-50">
-                    "Dataqa qasikaypa atómom. Atómo ch'uya kaptinqa, llaqtaqa mana p'akikuqmi."
+                <p id="dynamic-mantra" class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-70">
+                    "El dato es el átomo de la soberanía. Si el átomo es puro, la nación es invulnerable."
                 </p>
             </footer>
         </div>
@@ -64,7 +67,6 @@
                 const geoRes = await fetch('https://ipapi.co/json/');
                 const geoData = await geoRes.json();
                 const city = geoData.city || "LIMA";
-                
                 document.getElementById('city-display').innerText = city;
 
                 await fetch(`${SB_URL}/rest/v1/city_visits`, {
@@ -83,9 +85,7 @@
                 else if (["United States", "United Kingdom"].includes(geoData.country_name)) setLanguage('en');
                 else setLanguage('es');
 
-            } catch (e) {
-                document.getElementById('city-display').innerText = "OFFLINE";
-            }
+            } catch (e) { document.getElementById('city-display').innerText = "OFFLINE"; }
         }
 
         function setLanguage(lang) {
@@ -94,12 +94,25 @@
             btns[lang].classList.add('lang-active');
 
             const content = {
-                es: { title: "VIA51 -<br/>HOLDING DIGITAL", purpose: "Hacer del Perú un país de desarrollo sostenible de Calidad Mundial." },
-                qu: { title: "VIA51 -<br/>QHAPAQ LLAMKAY", purpose: "Perú suyuta teqsimuyuntinpi allin kawsayniyuq ruranapaq." },
-                en: { title: "VIA51 -<br/>DIGITAL HOLDING", purpose: "To make Peru a country of world-class sustainable development." }
+                es: { 
+                    title: "VIA51<br/>HOLDING DIGITAL", 
+                    purpose: "Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.",
+                    mantra: '"El dato es el átomo de la soberanía. Si el átomo es puro, la nación es invulnerable."'
+                },
+                qu: { 
+                    title: "VIA51<br/>QHAPAQ LLAMKAY", 
+                    purpose: "Perú suyuta allin kawsayniyuq, teqsimuyuntinpi allin kawsayniyuq ruranapaq huk mirayllapi.",
+                    mantra: '"Dataqa qasikaypa atómom. Atómo ch\'uya kaptinqa, llaqtaqa mana p\'akikuqmi."'
+                },
+                en: { 
+                    title: "VIA51<br/>DIGITAL HOLDING", 
+                    purpose: "To make Peru a country of well-being and world-class sustainable development in one generation.",
+                    mantra: '"Data is the atom of sovereignty. If the atom is pure, the nation is invulnerable."'
+                }
             };
             document.getElementById('main-title').innerHTML = content[lang].title;
             document.getElementById('purpose-text').innerText = content[lang].purpose;
+            document.getElementById('dynamic-mantra').innerText = content[lang].mantra;
         }
 
         document.getElementById('btn-es').onclick = () => setLanguage('es');
