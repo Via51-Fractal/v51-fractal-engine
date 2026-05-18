@@ -3,7 +3,7 @@ import { Cpu, Send, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, 
 
 const App = () => {
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Gobernador: sistema Gamma en fase total. GestiÃƒÂ³n idiomÃƒÂ¡tica y monitores sincronizados. Ã‚Â¿CuÃƒÂ¡l es su orden?' }
+    { role: 'ai', text: 'Gobernador: sistema Gamma en fase total. GestiÃƒÆ’Ã‚Â³n idiomÃƒÆ’Ã‚Â¡tica y monitores sincronizados. Ãƒâ€šÃ‚Â¿CuÃƒÆ’Ã‚Â¡l es su orden?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -61,10 +61,10 @@ const App = () => {
       if (data.candidates) {
         setMessages(prev => [...prev, { role: 'ai', text: data.candidates[0].content.parts[0].text }]);
       } else {
-        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: Error en nÃƒÂºcleo. ${data.error?.message || ''}` }]);
+        setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: Error en nÃƒÆ’Ã‚Âºcleo. ${data.error?.message || ''}` }]);
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la lÃƒÂ­nea.' }]);
+      setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la lÃƒÆ’Ã‚Â­nea.' }]);
     } finally {
       setLoading(false);
     }
@@ -82,7 +82,7 @@ const App = () => {
         break;
       case 'HISTORY':
         cmd = `git log --oneline via51-${node.path}`;
-        msg = `MEMORIA: Extrayendo histÃƒÂ³rico de maniobras de ${node.id}.`;
+        msg = `MEMORIA: Extrayendo histÃƒÆ’Ã‚Â³rico de maniobras de ${node.id}.`;
         break;
       case 'DELETE_CONFIRMED':
         cmd = `Remove-Item -Path C:\\via51-fractal\\via51-root\\index.html -Force`;
@@ -91,7 +91,7 @@ const App = () => {
         break;
       case 'UNDO':
         cmd = `git checkout HEAD -- via51-root/index.html`;
-        msg = `RESTAURACIÃƒâ€œN: Preparado comando para deshacer cambios en ROOT.`;
+        msg = `RESTAURACIÃƒÆ’Ã¢â‚¬Å“N: Preparado comando para deshacer cambios en ROOT.`;
         break;
     }
     setMessages(prev => [...prev, { role: 'ai', text: msg, command: cmd }]);
@@ -127,7 +127,7 @@ const App = () => {
       </header>
 
       <div className="flex flex-1 gap-2 overflow-hidden">
-        {/* COLUMNA 1: GESTIÃƒâ€œN IDIOMÃƒÂTICA */}
+        {/* COLUMNA 1: GESTIÃƒÆ’Ã¢â‚¬Å“N IDIOMÃƒÆ’Ã‚ÂTICA */}
         <aside className="w-20 md:w-24 flex flex-col gap-2">
           {nodes.map(node => (
             <div key={node.id} className="flex-1 flex flex-col gap-1">
@@ -188,7 +188,7 @@ const App = () => {
           <div className="p-4 bg-black/40 border-t border-white/5">
             <div className="flex gap-2 bg-slate-950 p-2 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all overflow-hidden shadow-2xl">
               <textarea 
-                placeholder="Escriba su orden estratÃƒÂ©gica (Ctrl+Enter para enviar)..."
+                placeholder="Escriba su orden estratÃƒÆ’Ã‚Â©gica (Ctrl+Enter para enviar)..."
                 className="flex-1 bg-transparent border-none text-xs p-2 focus:outline-none resize-none h-20 scrollbar-hide"
                 onKeyDown={(e) => { if(e.key==='Enter' && e.ctrlKey) handleExecute() }}
                 onChange={(e) => setInput(e.target.value)}
@@ -206,7 +206,7 @@ const App = () => {
         {/* COLUMNA 3: MONITORES */}
         <aside className="hidden xl:flex flex-1 flex flex-col gap-2">
           <div className="flex-1 bg-slate-900/60 rounded-3xl border border-white/5 overflow-hidden flex flex-col">
-            <div className="p-2 bg-green-500/10 border-b border-white/5 flex justify-between px-4"><span className="text-[9px] font-black text-green-400 uppercase">PRODUCCIÃƒâ€œN</span><Eye size={10}/></div>
+            <div className="p-2 bg-green-500/10 border-b border-white/5 flex justify-between px-4"><span className="text-[9px] font-black text-green-400 uppercase">PRODUCCIÃƒÆ’Ã¢â‚¬Å“N</span><Eye size={10}/></div>
             <iframe key={`alfa-${refreshKey}`} src="https://via51.org" className="w-full h-full border-none opacity-80 hover:opacity-100 transition-all"/>
           </div>
           <div className="flex-1 bg-slate-900/60 rounded-3xl border border-white/5 overflow-hidden flex flex-col">

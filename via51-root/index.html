@@ -3,123 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vía51 - Laboratorio Maestro</title>
+    <title>Vía51 - Laboratorio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #ffffff; }
-        .phone-frame { width: 360px; height: 740px; background: #020617; border: 12px solid #1e293b; border-radius: 3.5rem; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .gold-glow { color: #D4AF37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
-        .silver-text { color: #C0C2C9; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(192, 194, 201, 0.1); }
-        .lang-btn { padding: 6px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); }
-        .lang-active { background: #D4AF37; color: #000; border-color: #D4AF37; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
-        .btn-0c { background: linear-gradient(135deg, #D4AF37 0%, #C0C2C9 100%); color: #000; font-weight: 900; padding: 12px; border-radius: 1rem; text-align: center; font-size: 14px; letter-spacing: 0.2em; box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: transform 0.2s; }
-        .btn-0c:active { transform: scale(0.95); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; }
+        .phone { width: 360px; height: 740px; background: #020617; border: 12px solid #1e293b; border-radius: 3rem; overflow: hidden; display: flex; flex-direction: column; }
+        .gold { color: #D4AF37; }
+        .silver { color: #C0C2C9; }
+        .btn-lang { padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.05); font-size: 9px; font-weight: 900; border: 1px solid rgba(255,255,255,0.1); flex: 1; text-align: center; }
+        .active { background: #D4AF37; color: #000; border-color: #D4AF37; }
+        .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #D4AF37; width: 65%; box-shadow: 0 0 10px #D4AF37; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
-    <div class="phone-frame border-slate-800 shadow-2xl">
-        <div class="flex-1 p-8 flex flex-col justify-between relative z-10">
-            
-            <header class="mt-2">
-                <div class="flex justify-between items-center mb-1">
-                    <span id="city-display" class="text-[10px] font-black gold-glow uppercase tracking-widest">Detectando...</span>
-                    <span class="text-[10px] silver-text font-medium uppercase">visitante: <span id="visit-count" class="text-white">...</span></span>
+    <div class="phone shadow-2xl">
+        <div class="p-8 flex-1 flex flex-col justify-between">
+            <header>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-[10px] font-black gold uppercase tracking-widest">LIMA</span>
+                    <span class="text-[10px] silver uppercase">visitante: <span class="text-white">1,240</span></span>
                 </div>
-                
-                <div class="flex gap-2 mt-4 overflow-x-auto no-scrollbar pb-2">
-                    <button id="btn-es" class="lang-btn bg-white/5 text-slate-500">ESPAÑOL</button>
-                    <button id="btn-qu" class="lang-btn bg-white/5 text-slate-500">RUNA SIMI</button>
-                    <button id="btn-en" class="lang-btn bg-white/5 text-slate-500">ENGLISH</button>
+                <!-- BOTONERA TRILINGÜE -->
+                <div class="flex gap-2">
+                    <div class="btn-lang active">ESPAÑOL</div>
+                    <div class="btn-lang">RUNA SIMI</div>
+                    <div class="btn-lang">ENGLISH</div>
                 </div>
-                <div class="h-[1px] w-full bg-white/10 mt-6"></div>
             </header>
 
-            <main class="flex-1 flex flex-col justify-center gap-6">
-                <!-- TÍTULO SIN GUION -->
-                <h1 id="main-title" class="text-4xl font-black gold-glow leading-none uppercase tracking-tighter text-center">VIA51<br/>HOLDING DIGITAL</h1>
-                
-                <div class="glass-card p-6 rounded-[2rem] text-center">
-                    <p id="purpose-text" class="text-sm font-medium leading-relaxed silver-text">
-                        Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.
-                    </p>
+            <main class="flex-1 flex flex-col justify-center text-center">
+                <h1 class="text-3xl font-black gold leading-none mb-6 uppercase">VIA51<br/>HOLDING</h1>
+                <p class="text-[18.5px] font-medium silver leading-tight mb-8">
+                    Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.
+                </p>
+                <!-- SIMULACIÓN DE AVANCE -->
+                <div class="text-left">
+                    <p class="text-[9px] silver uppercase mb-2 tracking-widest">Avance del Proyecto: 65%</p>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
                 </div>
-
-                <!-- BOTÓN DE INGRESO 0 - C -->
-                <button class="btn-0c uppercase">0 - C</button>
             </main>
 
             <footer>
-                <p id="dynamic-mantra" class="text-[8px] silver-text text-center italic leading-relaxed px-4 opacity-70">
+                <p class="text-[11px] silver italic text-center opacity-70">
                     "El dato es el átomo de la soberanía. Si el átomo es puro, la nación es invulnerable."
                 </p>
             </footer>
         </div>
     </div>
-
-    <script>
-        const SB_URL = "https://ibhhzgtxaqwdykedhtvk.supabase.co";
-        const SB_KEY = "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK";
-
-        async function initSovereignty() {
-            try {
-                const geoRes = await fetch('https://ipapi.co/json/');
-                const geoData = await geoRes.json();
-                const city = geoData.city || "LIMA";
-                document.getElementById('city-display').innerText = city;
-
-                await fetch(`${SB_URL}/rest/v1/city_visits`, {
-                    method: 'POST',
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ city_name: city, visitor_ip: geoData.ip })
-                });
-
-                const countRes = await fetch(`${SB_URL}/rest/v1/city_visits?city_name=eq.${city}&select=count`, {
-                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Prefer': 'count=exact' }
-                });
-                const count = countRes.headers.get('content-range').split('/')[1];
-                document.getElementById('visit-count').innerText = count;
-
-                if (geoData.country_name === "Peru") setLanguage('es');
-                else if (["United States", "United Kingdom"].includes(geoData.country_name)) setLanguage('en');
-                else setLanguage('es');
-
-            } catch (e) { document.getElementById('city-display').innerText = "OFFLINE"; }
-        }
-
-        function setLanguage(lang) {
-            const btns = { es: document.getElementById('btn-es'), qu: document.getElementById('btn-qu'), en: document.getElementById('btn-en') };
-            Object.values(btns).forEach(b => b.classList.remove('lang-active'));
-            btns[lang].classList.add('lang-active');
-
-            const content = {
-                es: { 
-                    title: "VIA51<br/>HOLDING DIGITAL", 
-                    purpose: "Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.",
-                    mantra: '"El dato es el átomo de la soberanía. Si el átomo es puro, la nación es invulnerable."'
-                },
-                qu: { 
-                    title: "VIA51<br/>QHAPAQ LLAMKAY", 
-                    purpose: "Perú suyuta allin kawsayniyuq, teqsimuyuntinpi allin kawsayniyuq ruranapaq huk mirayllapi.",
-                    mantra: '"Dataqa qasikaypa atómom. Atómo ch\'uya kaptinqa, llaqtaqa mana p\'akikuqmi."'
-                },
-                en: { 
-                    title: "VIA51<br/>DIGITAL HOLDING", 
-                    purpose: "To make Peru a country of well-being and world-class sustainable development in one generation.",
-                    mantra: '"Data is the atom of sovereignty. If the atom is pure, the nation is invulnerable."'
-                }
-            };
-            document.getElementById('main-title').innerHTML = content[lang].title;
-            document.getElementById('purpose-text').innerText = content[lang].purpose;
-            document.getElementById('dynamic-mantra').innerText = content[lang].mantra;
-        }
-
-        document.getElementById('btn-es').onclick = () => setLanguage('es');
-        document.getElementById('btn-qu').onclick = () => setLanguage('qu');
-        document.getElementById('btn-en').onclick = () => setLanguage('en');
-
-        initSovereignty();
-    </script>
 </body>
 </html>
