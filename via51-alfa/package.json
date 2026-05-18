@@ -1,28 +1,28 @@
 {
-    "name":  "via51-alfa-fractal",
-    "version":  "3.5.0",
-    "private":  true,
-    "scripts":  {
-                    "dev":  "next dev",
-                    "build":  "next build",
-                    "start":  "next start"
-                },
-    "dependencies":  {
-                         "@supabase/supabase-js":  "^2.105.4",
-                         "@tailwindcss/postcss":  "^4.3.0",
-                         "framer-motion":  "^12.38.0",
-                         "lucide-react":  "^1.14.0",
-                         "next":  "latest",
-                         "react":  "rc",
-                         "react-dom":  "rc"
-                     },
-    "devDependencies":  {
-                            "@types/node":  "latest",
-                            "@types/react":  "latest",
-                            "autoprefixer":  "^10.5.0",
-                            "postcss":  "^8.5.14",
-                            "tailwindcss":  "^4.3.0",
-                            "typescript":  "latest"
-                        },
-    "description":  "V51-ALFA: Captura de Identidad y Registro Social - Eje Social"
+    "name": "via51-alfa-fractal",
+    "version": "3.5.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.105.4",
+        "@tailwindcss/postcss": "^4.3.0",
+        "framer-motion": "^12.38.0",
+        "lucide-react": "^1.14.0",
+        "next": "^16.2.6",
+        "react": "rc",
+        "react-dom": "rc"
+    },
+    "devDependencies": {
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "autoprefixer": "^10.5.0",
+        "postcss": "^8.5.14",
+        "tailwindcss": "^4.3.0",
+        "typescript": "latest"
+    },
+    "description": "V51-ALFA: Captura de Identidad y Registro Social - Eje Social"
 }
