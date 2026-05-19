@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vía51 - Bienvenida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000000; color: #ffffff; }
+        .phone-frame { width: 360px; height: 740px; background: #020617; border: 12px solid #1e293b; border-radius: 3.5rem; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .gold-glow { color: #D4AF37; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+        .silver-text { color: #C0C2C9; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(192, 194, 201, 0.1); }
+        
+        /* Formularios Discretos */
+        .input-discreet {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(192, 194, 201, 0.3);
+            color: #ffffff;
+            font-size: 14px;
+            padding: 8px 4px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .input-discreet:focus {
+            outline: none;
+            border-bottom: 1px solid #D4AF37;
+            box-shadow: 0 5px 10px -5px rgba(212, 175, 55, 0.2);
+        }
+        .input-discreet::placeholder {
+            color: rgba(192, 194, 201, 0.4);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-submit { background: linear-gradient(135deg, #D4AF37 0%, #aa771c 100%); color: #000; font-weight: 800; padding: 10px; border-radius: 0.8rem; text-align: center; font-size: 12px; letter-spacing: 0.1em; transition: transform 0.2s; width: 100%; border: none;}
+        .btn-submit:active { transform: scale(0.95); }
+        .btn-skip { background: transparent; color: #C0C2C9; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 15px; text-decoration: underline; opacity: 0.6; transition: opacity 0.3s; }
+        .btn-skip:hover { opacity: 1; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="phone-frame border-slate-800 shadow-2xl relative">
+        <!-- Efecto de fondo sutil -->
+        <div class="absolute top-0 right-0 w-48 h-48 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex-1 p-8 flex flex-col relative z-10">
+            
+            <header class="flex justify-between items-center mb-6">
+                <a href="index.html" class="text-white/50 hover:text-white transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </a>
+                <span class="text-[9px] font-bold silver-text tracking-widest uppercase">Protocolo 0-C</span>
+            </header>
+
+            <main class="flex-1 flex flex-col justify-start">
+                
+                <h1 class="text-3xl font-black gold-glow leading-none uppercase tracking-tighter mb-4">
+                    BIENVENIDO<br/>AL SISTEMA
+                </h1>
+                
+                <p class="text-[11px] font-medium leading-relaxed silver-text mb-8">
+                    El Holding Digital de Vía51 es la infraestructura matriz para el desarrollo soberano. Al ingresar, formas parte del ecosistema. 
+                    <br/><br/>
+                    El registro es totalmente **opcional**.
+                </p>
+
+                <div class="glass-card p-6 rounded-[1.5rem] mt-auto mb-4">
+                    <form id="registro-form" class="flex flex-col">
+                        <input type="text" id="nombres" class="input-discreet" placeholder="Nombres y Apellidos">
+                        <input type="text" id="alias" class="input-discreet" placeholder="Alias (Identificador Fractal)">
+                        <input type="tel" id="whatsapp" class="input-discreet" placeholder="Número de WhatsApp">
+                        
+                        <button type="button" id="btn-registrar" class="btn-submit mt-2">INGRESAR Y REGISTRAR</button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <button id="btn-omitir" class="btn-skip">OMITIR Y ENTRAR COMO INVITADO</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de captura silenciosa y registro opcional
+        const SB_URL = "https://ibhhzgtxaqwdykedhtvk.supabase.co";
+        const SB_KEY = "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK";
+
+        let userIP = "Desconocida";
+        let userCity = "LIMA";
+
+        // 1. Captura de IP silenciosa al cargar la página
+        async function captureIP() {
+            try {
+                const geoRes = await fetch('https://ipapi.co/json/');
+                const geoData = await geoRes.json();
+                userIP = geoData.ip;
+                userCity = geoData.city || "LIMA";
+                
+                // Registro silencioso del visitante (Protocolo 0-C)
+                fetch(`${SB_URL}/rest/v1/city_visits`, {
+                    method: 'POST',
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city_name: userCity, visitor_ip: userIP })
+                });
+            } catch (e) {
+                console.log("No se pudo rastrear IP silenciosamente");
+            }
+        }
+
+        captureIP();
+
+        // 2. Lógica del botón OMITIR
+        document.getElementById('btn-omitir').addEventListener('click', () => {
+            // Ir al contenido real (o donde defina el Gobernador)
+            alert("Has ingresado como invitado. Tu IP está registrada internamente.");
+            // window.location.href = "dashboard.html"; // Redirección futura
+        });
+
+        // 3. Lógica del botón REGISTRAR
+        document.getElementById('btn-registrar').addEventListener('click', async () => {
+            const nombres = document.getElementById('nombres').value;
+            const alias = document.getElementById('alias').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+
+            if(!nombres || !alias) {
+                alert("Si deseas registrarte, completa al menos Nombres y Alias.");
+                return;
+            }
+
+            const btn = document.getElementById('btn-registrar');
+            btn.innerText = "PROCESANDO...";
+            
+            try {
+                // Aquí en el futuro se guardará en una tabla 'usuarios' o 'registros'
+                // Por ahora simulamos el éxito
+                await new Promise(r => setTimeout(r, 1000));
+                
+                alert(`¡Bienvenido ${alias}! Has sido registrado exitosamente.`);
+                // window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Error de conexión con el nodo matriz.");
+                btn.innerText = "INGRESAR Y REGISTRAR";
+            }
+        });
+    </script>
+</body>
+</html>

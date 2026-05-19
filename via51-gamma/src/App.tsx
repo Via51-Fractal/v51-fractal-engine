@@ -2,23 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Cpu, Send, Layout, Database, Shield, Activity, ChevronUp, ChevronDown, Copy, ClipboardCopy, FileText, Check, Clock, XCircle, Key, Eye, RefreshCw, PlusCircle, History, Trash2, AlertTriangle, RotateCcw } from 'lucide-react';
 
 const App = () => {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Array<{ role: string, text: string, command?: string }>>([
     { role: 'ai', text: 'Gobernador: sistema Gamma en fase total. Gestión idiomática y monitores sincronizados. ¿Cuál es su orden?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState(null);
+  const [copiedIndex, setCopiedIndex] = useState<string | number | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const timerRef = useRef<any>(null);
-
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
-
+  // Clave de Groq (Llama 3) inyectada desde variables de entorno
+  const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
@@ -35,7 +34,7 @@ const App = () => {
     return () => clearInterval(timerRef.current);
   }, [loading]);
 
-  const copyToClipboard = (text, id) => {
+  const copyToClipboard = (text: string, id: string | number) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     setCopiedIndex(id);
@@ -52,25 +51,33 @@ const App = () => {
     setTimer(0);
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: currentInput }] }] })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
+        body: JSON.stringify({ 
+          model: 'llama3-8b-8192', 
+          messages: [{ role: 'user', content: currentInput }] 
+        })
       });
       const data = await response.json();
-      if (data.candidates) {
-        setMessages(prev => [...prev, { role: 'ai', text: data.candidates[0].content.parts[0].text }]);
+      if (data.choices && data.choices.length > 0) {
+        setMessages(prev => [...prev, { role: 'ai', text: data.choices[0].message.content }]);
       } else {
         setMessages(prev => [...prev, { role: 'ai', text: `SISTEMA: Error en núcleo. ${data.error?.message || ''}` }]);
+        setInput(currentInput); // Restaurar texto si falla la API
       }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'ai', text: 'ERROR DE FASE: Interferencia en la línea.' }]);
+      setInput(currentInput); // Restaurar texto si hay error de red
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNodeAction = (node, action) => {
+  const handleNodeAction = (node: any, action: string) => {
     let cmd = "";
     let msg = "";
     if (action === 'DELETE_REQUEST') { setConfirmDelete(true); return; }
@@ -188,9 +195,14 @@ const App = () => {
           <div className="p-4 bg-black/40 border-t border-white/5">
             <div className="flex gap-2 bg-slate-950 p-2 rounded-2xl border border-white/10 focus-within:border-purple-500/50 transition-all overflow-hidden shadow-2xl">
               <textarea 
-                placeholder="Escriba su orden estratégica (Ctrl+Enter para enviar)..."
+                placeholder="Escriba su orden estratégica (Enter para enviar, Shift+Enter para nueva línea)..."
                 className="flex-1 bg-transparent border-none text-xs p-2 focus:outline-none resize-none h-20 scrollbar-hide"
-                onKeyDown={(e) => { if(e.key==='Enter' && e.ctrlKey) handleExecute() }}
+                onKeyDown={(e) => { 
+                  if(e.key === 'Enter' && !e.shiftKey) { 
+                    e.preventDefault(); 
+                    handleExecute(); 
+                  } 
+                }}
                 onChange={(e) => setInput(e.target.value)}
                 value={input}
               />
