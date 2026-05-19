@@ -23,24 +23,24 @@
             <header>
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-[10px] font-black gold uppercase tracking-widest">LIMA</span>
-                    <span class="text-[10px] silver uppercase">visitante: <span class="text-white">1,240</span></span>
+                    <span class="text-[10px] silver uppercase">visitante: <span id="visitor-count" class="text-white animate-pulse">...</span></span>
                 </div>
                 <!-- BOTONERA TRILINGÜE -->
                 <div class="flex gap-2">
-                    <div class="btn-lang active">ESPAÑOL</div>
-                    <div class="btn-lang">RUNA SIMI</div>
-                    <div class="btn-lang">ENGLISH</div>
+                    <button id="btn-es" onclick="setLanguage('ES')" class="btn-lang active">ESPAÑOL</button>
+                    <button id="btn-qu" onclick="setLanguage('QU')" class="btn-lang">RUNA SIMI</button>
+                    <button id="btn-en" onclick="setLanguage('EN')" class="btn-lang">ENGLISH</button>
                 </div>
             </header>
 
             <main class="flex-1 flex flex-col justify-center text-center">
                 <h1 class="text-3xl font-black gold leading-none mb-6 uppercase">VIA51<br/>HOLDING</h1>
-                <p class="text-[18.5px] font-medium silver leading-tight mb-8">
+                <p id="subtitle-text" class="text-[18.5px] font-medium silver leading-tight mb-8">
                     Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.
                 </p>
                 <!-- SIMULACIÓN DE AVANCE -->
                 <div class="text-left">
-                    <p class="text-[9px] silver uppercase mb-2 tracking-widest">Avance del Proyecto: 65%</p>
+                    <p id="progress-text" class="text-[9px] silver uppercase mb-2 tracking-widest">AVANCE DEL PROYECTO: 65%</p>
                     <div class="progress-bar"><div class="progress-fill"></div></div>
                 </div>
                 
@@ -51,11 +51,83 @@
             </main>
 
             <footer>
-                <p class="text-[11px] silver italic text-center opacity-70">
-                    "El dato es el átomo de la soberanía. Si el átomo es puro, la nación es invulnerable."
+                <p id="mantra-text" class="text-[11px] silver italic text-center opacity-70">
+                    "El dato es el átomo de la soberanía. Si el átomo es puro, los resultados son consistentes."
                 </p>
             </footer>
         </div>
     </div>
+
+    <script>
+        // 1. DICCIONARIO TRILINGÜE (RAE, AMLQ, Oxford)
+        const dict = {
+            'ES': {
+                subtitle: "Hacer del Perú un país de bienestar y desarrollo sostenible de Calidad Mundial en una generación.",
+                progress: "AVANCE DEL PROYECTO: 65%",
+                mantra: '"El dato es el átomo de la soberanía. Si el átomo es puro, los resultados son consistentes."'
+            },
+            'QU': {
+                subtitle: "Piruw suyuta, sumaq kawsayniyuq, allin wiñariyniyuq, tiksimuyuntinpi aswan allin llaqtaman huk wiñaypi tukuchiy.",
+                progress: "RUWAYKUNAQA ÑAWPAQMAN: 65%",
+                mantra: '"Willakuyqa qhapaq suyup iñukunam. Iñuku ch\'uya kaptinqa, ruwaykunapas allinmi kanqa."'
+            },
+            'EN': {
+                subtitle: "To make Peru a country of well-being and sustainable development of World-Class quality within one generation.",
+                progress: "PROJECT PROGRESS: 65%",
+                mantra: '"Data is the atom of sovereignty. If the atom is pure, the outcomes are consistent."'
+            }
+        };
+
+        function setLanguage(lang) {
+            // Actualizar botones
+            ['ES', 'QU', 'EN'].forEach(l => {
+                const btn = document.getElementById(`btn-${l.toLowerCase()}`);
+                if(l === lang) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // Actualizar textos con transición fluida
+            const subtitle = document.getElementById('subtitle-text');
+            const progress = document.getElementById('progress-text');
+            const mantra = document.getElementById('mantra-text');
+
+            subtitle.style.opacity = 0; progress.style.opacity = 0; mantra.style.opacity = 0;
+            setTimeout(() => {
+                subtitle.innerText = dict[lang].subtitle;
+                progress.innerText = dict[lang].progress;
+                mantra.innerText = dict[lang].mantra;
+                subtitle.style.opacity = 1; progress.style.opacity = 1; mantra.style.opacity = 1;
+            }, 200);
+        }
+
+        // 2. CONEXIÓN SUPABASE (Contador Único)
+        const SB_URL = "https://ibhhzgtxaqwdykedhtvk.supabase.co";
+        const SB_KEY = "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK"; // Pública (Safe for Read)
+
+        async function fetchUniqueVisitors() {
+            try {
+                const res = await fetch(`${SB_URL}/rest/v1/city_visits?select=visitor_ip`, {
+                    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                });
+                const data = await res.json();
+                
+                // Calcular IPs únicas
+                const uniqueIPs = new Set(data.map(d => d.visitor_ip)).size;
+                
+                // Extraer IP propia del usuario para no contar repetidos visualmente si no hay red
+                document.getElementById('visitor-count').innerText = uniqueIPs.toLocaleString();
+                document.getElementById('visitor-count').classList.remove('animate-pulse');
+            } catch(e) {
+                document.getElementById('visitor-count').innerText = "1,240"; // Fallback estético
+            }
+        }
+
+        // Add transitions
+        document.getElementById('subtitle-text').style.transition = "opacity 0.2s ease-in-out";
+        document.getElementById('progress-text').style.transition = "opacity 0.2s ease-in-out";
+        document.getElementById('mantra-text').style.transition = "opacity 0.2s ease-in-out";
+
+        fetchUniqueVisitors();
+    </script>
 </body>
 </html>

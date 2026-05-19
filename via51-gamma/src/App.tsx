@@ -12,6 +12,7 @@ const App = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<string | number | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [visitorCount, setVisitorCount] = useState<number | string>("desconocido");
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -33,6 +34,25 @@ const App = () => {
     }
     return () => clearInterval(timerRef.current);
   }, [loading]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("https://ibhhzgtxaqwdykedhtvk.supabase.co/rest/v1/city_visits?select=visitor_ip", {
+          headers: { 
+            'apikey': "sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK", 
+            'Authorization': `Bearer sb_publishable_BJ5ike7tqjI4oE_64Dw80w_wy4SkzaK` 
+          }
+        });
+        const data = await res.json();
+        const uniqueIPs = new Set(data.map((d: any) => d.visitor_ip)).size;
+        setVisitorCount(uniqueIPs);
+      } catch (e) {
+        console.error("Error obteniendo telemetría:", e);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const copyToClipboard = (text: string, id: string | number) => {
     if (!text) return;
@@ -59,7 +79,11 @@ const App = () => {
         },
         body: JSON.stringify({ 
           model: 'llama-3.1-8b-instant', 
-          messages: [{ role: 'user', content: currentInput }] 
+          messages: [
+            { role: 'system', content: `Eres el Operador Digital del ecosistema Vía51. Responde de forma concisa, profesional e inteligente. Dato de telemetría en vivo: Actualmente hay ${visitorCount} visitantes únicos registrados en el sistema global.` },
+            ...messages.filter(m => m.role === 'ai' || m.role === 'user').map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text })),
+            { role: 'user', content: currentInput }
+          ] 
         })
       });
       const data = await response.json();
